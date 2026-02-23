@@ -5,48 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NCERT Quiz</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="q_history.js"></script>
+<script src="q_geography.js"></script>
+<script src="q_polity.js"></script>
+<script src="q_economics.js"></script>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: 'Segoe UI', sans-serif; background:#FFF8F0; min-height:100vh; }
-.header { background:linear-gradient(135deg,#FF6B00,#FFB300); padding:14px; text-align:center; }
-.header h1 { color:white; font-size:20px; font-weight:800; }
-.header p { color:rgba(255,255,255,0.9); font-size:11px; }
-.tabs { display:flex; gap:6px; padding:10px; overflow-x:auto; background:white; border-bottom:2px solid #F0E6D3; }
-.tab { flex-shrink:0; padding:6px 14px; border:2px solid transparent; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; background:#F5F5F5; color:#666; }
-.tab.active { background:#FF6B00; color:white; }
-.stats { display:flex; justify-content:space-around; padding:10px; background:white; border-bottom:1px solid #eee; }
-.stat { text-align:center; }
-.sv { font-size:20px; font-weight:800; color:#FF6B00; }
-.sv.g { color:#2E7D32; }
-.sv.r { color:#C62828; }
-.sl { font-size:10px; color:#888; }
-.premium { background:linear-gradient(135deg,#1A1A2E,#0D47A1); color:white; padding:8px 14px; display:flex; align-items:center; justify-content:space-between; font-size:11px; }
-.pbtn { background:#FFB300; color:#333; border:none; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700; cursor:pointer; }
-.main { padding:12px; }
-.card { background:white; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(255,107,0,0.15); border-left:5px solid #FF6B00; }
-.meta { display:flex; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:4px; }
-.badge { background:#FFF3CD; color:#8B6914; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
-.etag { background:#E8EAF6; color:#3949AB; font-size:10px; padding:3px 8px; border-radius:10px; }
-.qhi { font-size:15px; font-weight:700; line-height:1.6; margin-bottom:6px; }
-.qen { font-size:12px; color:#666; font-style:italic; margin-bottom:12px; padding-bottom:10px; border-bottom:1px dashed #EEE; }
-.opts { display:flex; flex-direction:column; gap:8px; }
-.opt { display:flex; align-items:center; gap:10px; padding:10px 14px; border:2px solid #E8E8E8; border-radius:12px; background:#FAFAFA; cursor:pointer; width:100%; text-align:left; font-family:inherit; transition:all 0.2s; }
-.opt:hover:not(:disabled) { border-color:#FF6B00; background:#FFF5EC; }
-.ol { width:28px; height:28px; border-radius:50%; background:#F0F0F0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; flex-shrink:0; color:#666; }
-.ohi { font-size:13px; font-weight:600; }
-.oen { font-size:11px; color:#888; font-style:italic; }
-.opt.correct { border-color:#2E7D32; background:#E8F5E9; }
-.opt.correct .ol { background:#2E7D32; color:white; }
-.opt.wrong { border-color:#C62828; background:#FFEBEE; }
-.opt.wrong .ol { background:#C62828; color:white; }
-.opt.show { border-color:#2E7D32; background:#E8F5E9; opacity:0.8; }
-.exp { margin-top:12px; padding:12px; background:#FFF8E1; border-radius:10px; border-left:4px solid #FFB300; display:none; }
-.etitle { font-size:12px; font-weight:700; color:#7B5800; margin-bottom:6px; }
-.ehi { font-size:13px; color:#5D4037; line-height:1.6; }
-.een { font-size:11px; color:#795548; font-style:italic; margin-top:4px; }
-.next { width:100%; padding:14px; background:linear-gradient(135deg,#FF6B00,#E55A00); color:white; border:none; border-radius:14px; font-family:inherit; font-size:16px; font-weight:800; cursor:pointer; margin-top:10px; display:none; }
-.next.show { display:block; }
-.qcount { font-size:11px; color:#999; text-align:right; margin-bottom:8px; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#FFF8F0;min-height:100vh;}
+.header{background:linear-gradient(135deg,#FF6B00,#FFB300);padding:14px;text-align:center;}
+.header h1{color:white;font-size:20px;font-weight:800;}
+.header p{color:rgba(255,255,255,0.9);font-size:11px;}
+.tabs{display:flex;gap:6px;padding:10px;overflow-x:auto;background:white;border-bottom:2px solid #F0E6D3;}
+.tab{flex-shrink:0;padding:6px 14px;border:2px solid transparent;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;background:#F5F5F5;color:#666;}
+.tab.active{background:#FF6B00;color:white;}
+.stats{display:flex;justify-content:space-around;padding:10px;background:white;border-bottom:1px solid #eee;}
+.stat{text-align:center;}
+.sv{font-size:20px;font-weight:800;color:#FF6B00;}
+.sv.g{color:#2E7D32;}
+.sv.r{color:#C62828;}
+.sl{font-size:10px;color:#888;}
+.premium{background:linear-gradient(135deg,#1A1A2E,#0D47A1);color:white;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;font-size:11px;}
+.pbtn{background:#FFB300;color:#333;border:none;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+.main{padding:12px;}
+.progress-bar{background:#F0E6D3;border-radius:10px;height:8px;margin-bottom:10px;overflow:hidden;}
+.progress-fill{background:linear-gradient(90deg,#FF6B00,#FFB300);height:100%;border-radius:10px;transition:width 0.3s;}
+.qinfo{display:flex;justify-content:space-between;font-size:11px;color:#888;margin-bottom:8px;}
+.card{background:white;border-radius:16px;padding:16px;box-shadow:0 4px 20px rgba(255,107,0,0.15);border-left:5px solid #FF6B00;}
+.meta{display:flex;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:4px;}
+.badge{background:#FFF3CD;color:#8B6914;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.etag{background:#E8EAF6;color:#3949AB;font-size:10px;padding:3px 8px;border-radius:10px;}
+.qhi{font-size:15px;font-weight:700;line-height:1.6;margin-bottom:6px;}
+.qen{font-size:12px;color:#666;font-style:italic;margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed #EEE;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid #E8E8E8;border-radius:12px;background:#FAFAFA;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:all 0.2s;}
+.opt:hover:not(:disabled){border-color:#FF6B00;background:#FFF5EC;}
+.ol{width:28px;height:28px;border-radius:50%;background:#F0F0F0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#666;}
+.ohi{font-size:13px;font-weight:600;}
+.oen{font-size:11px;color:#888;font-style:italic;}
+.opt.correct{border-color:#2E7D32;background:#E8F5E9;}
+.opt.correct .ol{background:#2E7D32;color:white;}
+.opt.wrong{border-color:#C62828;background:#FFEBEE;}
+.opt.wrong .ol{background:#C62828;color:white;}
+.opt.show{border-color:#2E7D32;background:#E8F5E9;opacity:0.8;}
+.exp{margin-top:12px;padding:12px;background:#FFF8E1;border-radius:10px;border-left:4px solid #FFB300;display:none;}
+.etitle{font-size:12px;font-weight:700;color:#7B5800;margin-bottom:6px;}
+.ehi{font-size:13px;color:#5D4037;line-height:1.6;}
+.een{font-size:11px;color:#795548;font-style:italic;margin-top:4px;}
+.next{width:100%;padding:14px;background:linear-gradient(135deg,#FF6B00,#E55A00);color:white;border:none;border-radius:14px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;margin-top:10px;display:none;}
+.next.show{display:block;}
+.complete-card{background:white;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 20px rgba(255,107,0,0.15);}
+.complete-card h2{font-size:22px;margin-bottom:8px;}
+.complete-card p{color:#666;font-size:14px;margin-bottom:16px;line-height:1.8;}
+.restart-btn{background:linear-gradient(135deg,#FF6B00,#E55A00);color:white;border:none;border-radius:14px;padding:14px 28px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
 </style>
 </head>
 <body>
@@ -68,114 +78,244 @@ body { font-family: 'Segoe UI', sans-serif; background:#FFF8F0; min-height:100vh
   <div class="stat"><div class="sv" id="s">0🔥</div><div class="sl">स्ट्रीक</div></div>
 </div>
 <div class="premium">
-  <span>✨ UPSC | SSC | Railway | CTET तैयारी</span>
-  <button class="pbtn">500+ MCQs</button>
+  <span>✨ UPSC | SSC | Railway | CTET</span>
+  <button class="pbtn" id="qcountbtn">लोड हो रहा...</button>
 </div>
 <div class="main">
-  <div class="qcount" id="qcount"></div>
-  <div class="card" id="card">
-    <div class="meta"><span class="badge" id="qb"></span><span class="etag" id="qt"></span></div>
-    <div class="qhi" id="qh"></div>
-    <div class="qen" id="qe"></div>
-    <div class="opts" id="opts"></div>
-    <div class="exp" id="exp">
-      <div class="etitle">💡 व्याख्या | Explanation</div>
-      <div class="ehi" id="eh"></div>
-      <div class="een" id="ee"></div>
+  <div class="progress-bar"><div class="progress-fill" id="progfill" style="width:0%"></div></div>
+  <div class="qinfo">
+    <span id="qnum">लोड हो रहा...</span>
+    <span id="qpct">0% पूरा</span>
+  </div>
+  <div id="quizarea">
+    <div class="card" id="card">
+      <div class="meta"><span class="badge" id="qb"></span><span class="etag" id="qt"></span></div>
+      <div class="qhi" id="qh"></div>
+      <div class="qen" id="qe"></div>
+      <div class="opts" id="opts"></div>
+      <div class="exp" id="exp">
+        <div class="etitle">💡 व्याख्या | Explanation</div>
+        <div class="ehi" id="eh"></div>
+        <div class="een" id="ee"></div>
+      </div>
+      <button class="next" id="next" onclick="nextQ()">➡️ अगला प्रश्न | Next Question</button>
     </div>
-    <button class="next" id="next" onclick="showQ()">➡️ अगला प्रश्न | Next Question</button>
   </div>
 </div>
+
 <script>
 if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
-var sub="history",stats={t:0,c:0,w:0,s:0},cur=null,answered=false,used=[];
-var SUBNAMES={history:"इतिहास",geography:"भूगोल",economics:"अर्थशास्त्र",polity:"राजनीति",mixed:"मिश्रित"};
 
-var Q=[
-{s:"history",c:"कक्षा 6",t:"UPSC 2018",qh:"सिंधु घाटी सभ्यता की खोज किसने की?",qe:"Who discovered the Indus Valley Civilization?",o:[{l:"A",h:"जॉन मार्शल",e:"John Marshall"},{l:"B",h:"दयाराम साहनी",e:"Dayaram Sahni"},{l:"C",h:"आर.डी. बनर्जी",e:"R.D. Banerjee"},{l:"D",h:"मोर्टिमर व्हीलर",e:"Mortimer Wheeler"}],a:"B",eh:"हड़प्पा की खोज 1921 में दयाराम साहनी ने की थी।",ee:"Harappa was discovered by Dayaram Sahni in 1921."},
-{s:"history",c:"कक्षा 6",t:"SSC 2019",qh:"सिंधु घाटी का सबसे बड़ा नगर कौन था?",qe:"Largest city of Indus Valley Civilization?",o:[{l:"A",h:"हड़प्पा",e:"Harappa"},{l:"B",h:"मोहनजोदड़ो",e:"Mohenjo-daro"},{l:"C",h:"लोथल",e:"Lothal"},{l:"D",h:"कालीबंगन",e:"Kalibangan"}],a:"B",eh:"मोहनजोदड़ो सिंधु घाटी सभ्यता का सबसे बड़ा नगर था।",ee:"Mohenjo-daro was the largest city of Indus Valley Civilization."},
-{s:"history",c:"कक्षा 6",t:"Railway 2020",qh:"ऋग्वेद में कितने मंडल हैं?",qe:"How many mandalas are in Rigveda?",o:[{l:"A",h:"8",e:"8"},{l:"B",h:"10",e:"10"},{l:"C",h:"12",e:"12"},{l:"D",h:"6",e:"6"}],a:"B",eh:"ऋग्वेद में 10 मंडल और 1028 सूक्त हैं।",ee:"Rigveda has 10 mandalas and 1028 hymns."},
-{s:"history",c:"कक्षा 6",t:"SSC 2020",qh:"महावीर का जन्म कहाँ हुआ?",qe:"Where was Mahavira born?",o:[{l:"A",h:"वैशाली",e:"Vaishali"},{l:"B",h:"पाटलिपुत्र",e:"Pataliputra"},{l:"C",h:"कपिलवस्तु",e:"Kapilavastu"},{l:"D",h:"राजगृह",e:"Rajagriha"}],a:"A",eh:"महावीर का जन्म 599 ईसा पूर्व वैशाली में हुआ था।",ee:"Mahavira was born in Vaishali in 599 BCE."},
-{s:"history",c:"कक्षा 6",t:"UPSC 2020",qh:"बुद्ध को ज्ञान कहाँ प्राप्त हुआ?",qe:"Where did Buddha attain enlightenment?",o:[{l:"A",h:"सारनाथ",e:"Sarnath"},{l:"B",h:"बोधगया",e:"Bodh Gaya"},{l:"C",h:"कुशीनगर",e:"Kushinagar"},{l:"D",h:"लुंबिनी",e:"Lumbini"}],a:"B",eh:"बुद्ध को बोधगया में बोधि वृक्ष के नीचे ज्ञान प्राप्त हुआ।",ee:"Buddha attained enlightenment under Bodhi tree in Bodh Gaya."},
-{s:"history",c:"कक्षा 6",t:"CTET 2019",qh:"बौद्ध धर्म के संस्थापक कौन थे?",qe:"Who founded Buddhism?",o:[{l:"A",h:"महावीर",e:"Mahavira"},{l:"B",h:"गौतम बुद्ध",e:"Gautam Buddha"},{l:"C",h:"शंकराचार्य",e:"Shankaracharya"},{l:"D",h:"चाणक्य",e:"Chanakya"}],a:"B",eh:"गौतम बुद्ध ने 6वीं सदी ईसा पूर्व में बौद्ध धर्म की स्थापना की।",ee:"Gautam Buddha founded Buddhism in 6th century BCE."},
-{s:"history",c:"कक्षा 7",t:"SSC 2018",qh:"चंद्रगुप्त मौर्य का प्रधानमंत्री कौन था?",qe:"Who was PM of Chandragupta Maurya?",o:[{l:"A",h:"बिंदुसार",e:"Bindusara"},{l:"B",h:"चाणक्य",e:"Chanakya"},{l:"C",h:"अशोक",e:"Ashoka"},{l:"D",h:"सेल्यूकस",e:"Seleucus"}],a:"B",eh:"चाणक्य (कौटिल्य) चंद्रगुप्त मौर्य के प्रधानमंत्री थे।",ee:"Chanakya was the Prime Minister of Chandragupta Maurya."},
-{s:"history",c:"कक्षा 7",t:"UPSC 2019",qh:"अशोक के अभिलेख किस लिपि में हैं?",qe:"In which script are Ashoka's inscriptions?",o:[{l:"A",h:"देवनागरी",e:"Devanagari"},{l:"B",h:"ब्राह्मी",e:"Brahmi"},{l:"C",h:"खरोष्ठी",e:"Kharosthi"},{l:"D",h:"संस्कृत",e:"Sanskrit"}],a:"B",eh:"अशोक के अधिकतर अभिलेख ब्राह्मी लिपि में लिखे गए हैं।",ee:"Most of Ashoka's inscriptions are in Brahmi script."},
-{s:"history",c:"कक्षा 7",t:"Railway 2019",qh:"गुप्त वंश की स्थापना किसने की?",qe:"Who founded the Gupta dynasty?",o:[{l:"A",h:"चंद्रगुप्त प्रथम",e:"Chandragupta I"},{l:"B",h:"श्रीगुप्त",e:"Sri Gupta"},{l:"C",h:"समुद्रगुप्त",e:"Samudragupta"},{l:"D",h:"चंद्रगुप्त द्वितीय",e:"Chandragupta II"}],a:"B",eh:"गुप्त वंश की स्थापना श्रीगुप्त ने की थी।",ee:"Gupta dynasty was founded by Sri Gupta."},
-{s:"history",c:"कक्षा 7",t:"CTET 2020",qh:"समुद्रगुप्त को किस नाम से जाना जाता है?",qe:"What is Samudragupta called?",o:[{l:"A",h:"भारत का नेपोलियन",e:"Napoleon of India"},{l:"B",h:"भारत का अकबर",e:"Akbar of India"},{l:"C",h:"महान शासक",e:"Great ruler"},{l:"D",h:"विजेता",e:"Conqueror"}],a:"A",eh:"समुद्रगुप्त को भारत का नेपोलियन कहा जाता है।",ee:"Samudragupta is called Napoleon of India."},
-{s:"history",c:"कक्षा 7",t:"SSC 2021",qh:"हर्षवर्धन की राजधानी कहाँ थी?",qe:"What was the capital of Harshavardhana?",o:[{l:"A",h:"पाटलिपुत्र",e:"Pataliputra"},{l:"B",h:"कन्नौज",e:"Kannauj"},{l:"C",h:"थानेश्वर",e:"Thaneshwar"},{l:"D",h:"उज्जैन",e:"Ujjain"}],a:"B",eh:"हर्षवर्धन की राजधानी कन्नौज थी।",ee:"Kannauj was the capital of Harshavardhana."},
-{s:"history",c:"कक्षा 7",t:"UPSC 2021",qh:"अकबर का दरबारी संगीतकार कौन था?",qe:"Who was the court musician of Akbar?",o:[{l:"A",h:"तानसेन",e:"Tansen"},{l:"B",h:"बैजू बावरा",e:"Baiju Bawra"},{l:"C",h:"अमीर खुसरो",e:"Amir Khusro"},{l:"D",h:"बीरबल",e:"Birbal"}],a:"A",eh:"तानसेन अकबर के नवरत्नों में से एक थे।",ee:"Tansen was one of the nine gems of Akbar."},
-{s:"history",c:"कक्षा 8",t:"UPSC 2017",qh:"पानीपत की पहली लड़ाई कब हुई?",qe:"When was First Battle of Panipat?",o:[{l:"A",h:"1526",e:"1526"},{l:"B",h:"1556",e:"1556"},{l:"C",h:"1761",e:"1761"},{l:"D",h:"1600",e:"1600"}],a:"A",eh:"पानीपत की पहली लड़ाई 1526 में बाबर और इब्राहिम लोदी के बीच हुई।",ee:"First Battle of Panipat was fought in 1526 between Babur and Ibrahim Lodi."},
-{s:"history",c:"कक्षा 8",t:"SSC 2019",qh:"ताजमहल किसने बनवाया?",qe:"Who built the Taj Mahal?",o:[{l:"A",h:"अकबर",e:"Akbar"},{l:"B",h:"जहाँगीर",e:"Jahangir"},{l:"C",h:"शाहजहाँ",e:"Shah Jahan"},{l:"D",h:"औरंगजेब",e:"Aurangzeb"}],a:"C",eh:"ताजमहल शाहजहाँ ने 1632-1653 के बीच बनवाया।",ee:"Taj Mahal was built by Shah Jahan between 1632-1653."},
-{s:"history",c:"कक्षा 8",t:"Railway 2018",qh:"शिवाजी का जन्म कब हुआ?",qe:"When was Shivaji born?",o:[{l:"A",h:"1627",e:"1627"},{l:"B",h:"1630",e:"1630"},{l:"C",h:"1640",e:"1640"},{l:"D",h:"1656",e:"1656"}],a:"B",eh:"शिवाजी का जन्म 19 फरवरी 1630 को हुआ था।",ee:"Shivaji was born on 19 February 1630."},
-{s:"history",c:"कक्षा 8",t:"UPSC 2016",qh:"1857 की क्रांति का तात्कालिक कारण?",qe:"Immediate cause of 1857 revolt?",o:[{l:"A",h:"भारी कर",e:"Heavy taxation"},{l:"B",h:"चर्बी वाले कारतूस",e:"Greased cartridges"},{l:"C",h:"अंग्रेजी शिक्षा",e:"English education"},{l:"D",h:"डलहौजी की नीति",e:"Dalhousie policy"}],a:"B",eh:"चर्बी लगे कारतूस ने 1857 की क्रांति को जन्म दिया।",ee:"Greased cartridges triggered the 1857 revolt."},
-{s:"history",c:"कक्षा 9",t:"UPSC 2018",qh:"प्लासी का युद्ध कब हुआ?",qe:"When was Battle of Plassey?",o:[{l:"A",h:"1757",e:"1757"},{l:"B",h:"1760",e:"1760"},{l:"C",h:"1764",e:"1764"},{l:"D",h:"1775",e:"1775"}],a:"A",eh:"प्लासी का युद्ध 1757 में क्लाइव और सिराजुद्दौला के बीच हुआ।",ee:"Battle of Plassey was fought in 1757 between Clive and Siraj-ud-Daulah."},
-{s:"history",c:"कक्षा 9",t:"SSC 2019",qh:"बक्सर का युद्ध कब हुआ?",qe:"When was Battle of Buxar?",o:[{l:"A",h:"1757",e:"1757"},{l:"B",h:"1761",e:"1761"},{l:"C",h:"1764",e:"1764"},{l:"D",h:"1770",e:"1770"}],a:"C",eh:"बक्सर का युद्ध 1764 में हुआ।",ee:"Battle of Buxar was fought in 1764."},
-{s:"history",c:"कक्षा 9",t:"Railway 2020",qh:"भारतीय राष्ट्रीय कांग्रेस की स्थापना कब हुई?",qe:"When was Indian National Congress founded?",o:[{l:"A",h:"1885",e:"1885"},{l:"B",h:"1890",e:"1890"},{l:"C",h:"1905",e:"1905"},{l:"D",h:"1857",e:"1857"}],a:"A",eh:"INC की स्थापना 1885 में A.O. Hume ने की।",ee:"INC was founded in 1885 by A.O. Hume."},
-{s:"history",c:"कक्षा 9",t:"UPSC 2021",qh:"जलियाँवाला बाग हत्याकांड कब हुआ?",qe:"When was Jallianwala Bagh massacre?",o:[{l:"A",h:"1917",e:"1917"},{l:"B",h:"1919",e:"1919"},{l:"C",h:"1920",e:"1920"},{l:"D",h:"1922",e:"1922"}],a:"B",eh:"जलियाँवाला बाग हत्याकांड 13 अप्रैल 1919 को हुआ।",ee:"Jallianwala Bagh massacre was on 13 April 1919."},
-{s:"history",c:"कक्षा 10",t:"SSC 2018",qh:"INC के प्रथम अध्यक्ष कौन थे?",qe:"Who was first President of INC?",o:[{l:"A",h:"दादाभाई नौरोजी",e:"Dadabhai Naoroji"},{l:"B",h:"व्योमेश चंद्र बनर्जी",e:"Womesh Chandra Bonerjee"},{l:"C",h:"बाल गंगाधर तिलक",e:"Bal Gangadhar Tilak"},{l:"D",h:"गोपाल कृष्ण गोखले",e:"Gopal Krishna Gokhale"}],a:"B",eh:"व्योमेश चंद्र बनर्जी INC के प्रथम अध्यक्ष थे (1885)।",ee:"Womesh Chandra Bonerjee was first President of INC (1885)."},
-{s:"history",c:"कक्षा 10",t:"UPSC 2020",qh:"बंगाल का विभाजन कब हुआ?",qe:"When was Bengal partitioned?",o:[{l:"A",h:"1903",e:"1903"},{l:"B",h:"1905",e:"1905"},{l:"C",h:"1906",e:"1906"},{l:"D",h:"1911",e:"1911"}],a:"B",eh:"बंगाल का विभाजन 1905 में लॉर्ड कर्जन ने किया था।",ee:"Bengal was partitioned in 1905 by Lord Curzon."},
-{s:"history",c:"कक्षा 10",t:"Railway 2021",qh:"असहयोग आंदोलन कब शुरू हुआ?",qe:"When did Non-Cooperation Movement start?",o:[{l:"A",h:"1919",e:"1919"},{l:"B",h:"1920",e:"1920"},{l:"C",h:"1922",e:"1922"},{l:"D",h:"1930",e:"1930"}],a:"B",eh:"गांधीजी ने 1920 में असहयोग आंदोलन शुरू किया।",ee:"Gandhiji started Non-Cooperation Movement in 1920."},
-{s:"history",c:"कक्षा 10",t:"SSC 2021",qh:"दांडी मार्च कब हुआ?",qe:"When was Dandi March?",o:[{l:"A",h:"1920",e:"1920"},{l:"B",h:"1930",e:"1930"},{l:"C",h:"1942",e:"1942"},{l:"D",h:"1915",e:"1915"}],a:"B",eh:"1930 में गांधीजी ने नमक सत्याग्रह के तहत दांडी मार्च किया।",ee:"Gandhiji did Dandi March in 1930 as Salt Satyagraha."},
-{s:"history",c:"कक्षा 10",t:"UPSC 2019",qh:"भारत छोड़ो आंदोलन कब शुरू हुआ?",qe:"When did Quit India Movement start?",o:[{l:"A",h:"1940",e:"1940"},{l:"B",h:"1941",e:"1941"},{l:"C",h:"1942",e:"1942"},{l:"D",h:"1943",e:"1943"}],a:"C",eh:"भारत छोड़ो आंदोलन 8 अगस्त 1942 को शुरू हुआ।",ee:"Quit India Movement started on 8 August 1942."},
-{s:"history",c:"कक्षा 11",t:"UPSC 2016",qh:"साइमन कमीशन भारत कब आया?",qe:"When did Simon Commission come to India?",o:[{l:"A",h:"1926",e:"1926"},{l:"B",h:"1927",e:"1927"},{l:"C",h:"1928",e:"1928"},{l:"D",h:"1929",e:"1929"}],a:"C",eh:"साइमन कमीशन 1928 में भारत आया।",ee:"Simon Commission came to India in 1928."},
-{s:"history",c:"कक्षा 11",t:"SSC 2017",qh:"गांधी-इर्विन समझौता कब हुआ?",qe:"When was Gandhi-Irwin Pact?",o:[{l:"A",h:"1930",e:"1930"},{l:"B",h:"1931",e:"1931"},{l:"C",h:"1932",e:"1932"},{l:"D",h:"1933",e:"1933"}],a:"B",eh:"गांधी-इर्विन समझौता 5 मार्च 1931 को हुआ।",ee:"Gandhi-Irwin Pact was on 5 March 1931."},
-{s:"history",c:"कक्षा 12",t:"UPSC 2015",qh:"भारतीय स्वतंत्रता अधिनियम कब पारित हुआ?",qe:"When was Indian Independence Act passed?",o:[{l:"A",h:"1946",e:"1946"},{l:"B",h:"1947",e:"1947"},{l:"C",h:"1948",e:"1948"},{l:"D",h:"1950",e:"1950"}],a:"B",eh:"भारतीय स्वतंत्रता अधिनियम जुलाई 1947 में पारित किया गया।",ee:"Indian Independence Act was passed in July 1947."},
-{s:"history",c:"कक्षा 12",t:"SSC 2016",qh:"माउंटबेटन योजना कब घोषित हुई?",qe:"When was Mountbatten Plan announced?",o:[{l:"A",h:"मई 1947",e:"May 1947"},{l:"B",h:"जून 1947",e:"June 1947"},{l:"C",h:"जुलाई 1947",e:"July 1947"},{l:"D",h:"अगस्त 1947",e:"August 1947"}],a:"B",eh:"माउंटबेटन योजना 3 जून 1947 को घोषित की गई।",ee:"Mountbatten Plan was announced on 3 June 1947."},
-{s:"history",c:"कक्षा 12",t:"UPSC 2014",qh:"भारत को स्वतंत्रता कब मिली?",qe:"When did India get independence?",o:[{l:"A",h:"14 अगस्त 1947",e:"14 August 1947"},{l:"B",h:"15 अगस्त 1947",e:"15 August 1947"},{l:"C",h:"26 जनवरी 1950",e:"26 January 1950"},{l:"D",h:"2 अक्टूबर 1947",e:"2 October 1947"}],a:"B",eh:"भारत को 15 अगस्त 1947 को स्वतंत्रता मिली।",ee:"India got independence on 15 August 1947."},
-{s:"history",c:"कक्षा 12",t:"SSC 2015",qh:"स्वतंत्र भारत के प्रथम प्रधानमंत्री कौन थे?",qe:"Who was first PM of independent India?",o:[{l:"A",h:"सरदार पटेल",e:"Sardar Patel"},{l:"B",h:"जवाहरलाल नेहरू",e:"Jawaharlal Nehru"},{l:"C",h:"राजेंद्र प्रसाद",e:"Rajendra Prasad"},{l:"D",h:"मौलाना आजाद",e:"Maulana Azad"}],a:"B",eh:"जवाहरलाल नेहरू स्वतंत्र भारत के प्रथम प्रधानमंत्री थे।",ee:"Jawaharlal Nehru was first PM of independent India."},
+// Combine all questions
+var ALL_Q = [].concat(
+  (typeof Q_HISTORY!=='undefined'?Q_HISTORY:[]),
+  (typeof Q_GEOGRAPHY!=='undefined'?Q_GEOGRAPHY:[]),
+  (typeof Q_POLITY!=='undefined'?Q_POLITY:[]),
+  (typeof Q_ECONOMICS!=='undefined'?Q_ECONOMICS:[])
+);
 
-{s:"geography",c:"कक्षा 6",t:"SSC 2020",qh:"भारत की सबसे लंबी नदी कौन सी है?",qe:"Longest river in India?",o:[{l:"A",h:"गंगा",e:"Ganga"},{l:"B",h:"गोदावरी",e:"Godavari"},{l:"C",h:"यमुना",e:"Yamuna"},{l:"D",h:"सिंधु",e:"Indus"}],a:"A",eh:"गंगा 2525 km के साथ भारत की सबसे लंबी नदी है।",ee:"Ganga at 2525 km is India's longest river."},
-{s:"geography",c:"कक्षा 6",t:"Railway 2020",qh:"भारत का सबसे बड़ा राज्य कौन सा है?",qe:"Largest state of India by area?",o:[{l:"A",h:"मध्य प्रदेश",e:"Madhya Pradesh"},{l:"B",h:"महाराष्ट्र",e:"Maharashtra"},{l:"C",h:"राजस्थान",e:"Rajasthan"},{l:"D",h:"उत्तर प्रदेश",e:"Uttar Pradesh"}],a:"C",eh:"राजस्थान क्षेत्रफल में भारत का सबसे बड़ा राज्य है।",ee:"Rajasthan is India's largest state by area."},
-{s:"geography",c:"कक्षा 6",t:"CTET 2019",qh:"भारत में कुल कितने राज्य हैं?",qe:"How many states are there in India?",o:[{l:"A",h:"28",e:"28"},{l:"B",h:"29",e:"29"},{l:"C",h:"27",e:"27"},{l:"D",h:"30",e:"30"}],a:"A",eh:"भारत में 28 राज्य और 8 केंद्र शासित प्रदेश हैं।",ee:"India has 28 states and 8 Union Territories."},
-{s:"geography",c:"कक्षा 6",t:"SSC 2019",qh:"भारत का सबसे छोटा राज्य कौन सा है?",qe:"Smallest state of India by area?",o:[{l:"A",h:"गोवा",e:"Goa"},{l:"B",h:"सिक्किम",e:"Sikkim"},{l:"C",h:"त्रिपुरा",e:"Tripura"},{l:"D",h:"मणिपुर",e:"Manipur"}],a:"A",eh:"गोवा क्षेत्रफल में भारत का सबसे छोटा राज्य है।",ee:"Goa is the smallest state of India by area."},
-{s:"geography",c:"कक्षा 7",t:"UPSC 2018",qh:"भारत में सबसे अधिक वर्षा कहाँ होती है?",qe:"Where does highest rainfall occur in India?",o:[{l:"A",h:"चेरापूंजी",e:"Cherrapunji"},{l:"B",h:"मासिनराम",e:"Mawsynram"},{l:"C",h:"मुंबई",e:"Mumbai"},{l:"D",h:"कोलकाता",e:"Kolkata"}],a:"B",eh:"मासिनराम विश्व में सर्वाधिक वर्षा वाला स्थान है।",ee:"Mawsynram receives highest rainfall in world."},
-{s:"geography",c:"कक्षा 7",t:"SSC 2021",qh:"भारत की सबसे लंबी तटरेखा किस राज्य की है?",qe:"State with longest coastline in India?",o:[{l:"A",h:"केरल",e:"Kerala"},{l:"B",h:"तमिलनाडु",e:"Tamil Nadu"},{l:"C",h:"गुजरात",e:"Gujarat"},{l:"D",h:"महाराष्ट्र",e:"Maharashtra"}],a:"C",eh:"गुजरात की तटरेखा 1600 km के साथ सबसे लंबी है।",ee:"Gujarat has longest coastline of 1600 km."},
-{s:"geography",c:"कक्षा 7",t:"Railway 2019",qh:"थार मरुस्थल किस राज्य में है?",qe:"In which state is Thar Desert?",o:[{l:"A",h:"गुजरात",e:"Gujarat"},{l:"B",h:"राजस्थान",e:"Rajasthan"},{l:"C",h:"हरियाणा",e:"Haryana"},{l:"D",h:"पंजाब",e:"Punjab"}],a:"B",eh:"थार मरुस्थल मुख्यतः राजस्थान में स्थित है।",ee:"Thar Desert is mainly in Rajasthan."},
-{s:"geography",c:"कक्षा 7",t:"UPSC 2021",qh:"हिमालय की सबसे ऊँची चोटी कौन सी है?",qe:"Highest peak of Himalayas?",o:[{l:"A",h:"K2",e:"K2"},{l:"B",h:"माउंट एवरेस्ट",e:"Mount Everest"},{l:"C",h:"कंचनजंगा",e:"Kanchenjunga"},{l:"D",h:"नंगा पर्बत",e:"Nanga Parbat"}],a:"B",eh:"माउंट एवरेस्ट 8848 मीटर के साथ सबसे ऊँची चोटी है।",ee:"Mount Everest at 8848m is highest peak."},
-{s:"geography",c:"कक्षा 8",t:"SSC 2020",qh:"काली मिट्टी किस फसल के लिए उपयुक्त है?",qe:"Black soil is suitable for which crop?",o:[{l:"A",h:"चावल",e:"Rice"},{l:"B",h:"कपास",e:"Cotton"},{l:"C",h:"गेहूँ",e:"Wheat"},{l:"D",h:"चाय",e:"Tea"}],a:"B",eh:"काली मिट्टी (रेगुर) कपास की खेती के लिए सबसे उपयुक्त है।",ee:"Black soil is most suitable for cotton cultivation."},
-{s:"geography",c:"कक्षा 8",t:"Railway 2021",qh:"भारत में सर्वाधिक चावल कहाँ उगाया जाता है?",qe:"Where is maximum rice grown in India?",o:[{l:"A",h:"पंजाब",e:"Punjab"},{l:"B",h:"उत्तर प्रदेश",e:"Uttar Pradesh"},{l:"C",h:"पश्चिम बंगाल",e:"West Bengal"},{l:"D",h:"आंध्र प्रदेश",e:"Andhra Pradesh"}],a:"C",eh:"पश्चिम बंगाल भारत में सर्वाधिक चावल उत्पादन करता है।",ee:"West Bengal produces maximum rice in India."},
-{s:"geography",c:"कक्षा 9",t:"UPSC 2019",qh:"जनसंख्या में सबसे बड़ा राज्य कौन सा है?",qe:"Most populous state of India?",o:[{l:"A",h:"महाराष्ट्र",e:"Maharashtra"},{l:"B",h:"बिहार",e:"Bihar"},{l:"C",h:"उत्तर प्रदेश",e:"Uttar Pradesh"},{l:"D",h:"पश्चिम बंगाल",e:"West Bengal"}],a:"C",eh:"उत्तर प्रदेश जनसंख्या में भारत का सबसे बड़ा राज्य है।",ee:"Uttar Pradesh is the most populous state."},
-{s:"geography",c:"कक्षा 9",t:"SSC 2018",qh:"भारत का सबसे बड़ा बंदरगाह कौन सा है?",qe:"Largest port of India?",o:[{l:"A",h:"मुंबई",e:"Mumbai"},{l:"B",h:"कोलकाता",e:"Kolkata"},{l:"C",h:"चेन्नई",e:"Chennai"},{l:"D",h:"कांडला",e:"Kandla"}],a:"A",eh:"मुंबई भारत का सबसे बड़ा बंदरगाह है।",ee:"Mumbai is the largest port of India."},
-{s:"geography",c:"कक्षा 9",t:"Railway 2020",qh:"भारत में सर्वाधिक गेहूँ कहाँ उगाया जाता है?",qe:"Where is maximum wheat grown in India?",o:[{l:"A",h:"मध्य प्रदेश",e:"Madhya Pradesh"},{l:"B",h:"उत्तर प्रदेश",e:"Uttar Pradesh"},{l:"C",h:"पंजाब",e:"Punjab"},{l:"D",h:"हरियाणा",e:"Haryana"}],a:"B",eh:"उत्तर प्रदेश भारत में सर्वाधिक गेहूँ उत्पादन करता है।",ee:"Uttar Pradesh produces maximum wheat in India."},
-{s:"geography",c:"कक्षा 10",t:"UPSC 2020",qh:"भारत की सबसे बड़ी झील कौन सी है?",qe:"Largest lake of India?",o:[{l:"A",h:"डल झील",e:"Dal Lake"},{l:"B",h:"वुलर झील",e:"Wular Lake"},{l:"C",h:"चिल्का झील",e:"Chilika Lake"},{l:"D",h:"सांभर झील",e:"Sambhar Lake"}],a:"B",eh:"वुलर झील भारत की सबसे बड़ी मीठे पानी की झील है।",ee:"Wular Lake is India's largest freshwater lake."},
-{s:"geography",c:"कक्षा 10",t:"SSC 2019",qh:"भारत की सबसे ऊँची पर्वत चोटी कौन सी है?",qe:"Highest mountain peak in India?",o:[{l:"A",h:"नंदा देवी",e:"Nanda Devi"},{l:"B",h:"कंचनजंगा",e:"Kanchenjunga"},{l:"C",h:"K2",e:"K2"},{l:"D",h:"नंगा पर्बत",e:"Nanga Parbat"}],a:"B",eh:"कंचनजंगा (8586 m) भारत की सबसे ऊँची चोटी है।",ee:"Kanchenjunga (8586 m) is India's highest peak."},
-{s:"geography",c:"कक्षा 11",t:"UPSC 2017",qh:"सुंदरबन कहाँ स्थित है?",qe:"Where is Sundarbans located?",o:[{l:"A",h:"ओडिशा",e:"Odisha"},{l:"B",h:"पश्चिम बंगाल",e:"West Bengal"},{l:"C",h:"आंध्र प्रदेश",e:"Andhra Pradesh"},{l:"D",h:"तमिलनाडु",e:"Tamil Nadu"}],a:"B",eh:"सुंदरबन पश्चिम बंगाल में गंगा-ब्रह्मपुत्र के डेल्टा में है।",ee:"Sundarbans is in West Bengal in Ganga-Brahmaputra delta."},
-{s:"geography",c:"कक्षा 11",t:"SSC 2018",qh:"भारत में सबसे अधिक वन किस राज्य में हैं?",qe:"Which state has most forests in India?",o:[{l:"A",h:"मध्य प्रदेश",e:"Madhya Pradesh"},{l:"B",h:"अरुणाचल प्रदेश",e:"Arunachal Pradesh"},{l:"C",h:"छत्तीसगढ़",e:"Chhattisgarh"},{l:"D",h:"महाराष्ट्र",e:"Maharashtra"}],a:"A",eh:"मध्य प्रदेश में सर्वाधिक वन क्षेत्र है।",ee:"Madhya Pradesh has maximum forest area in India."},
-{s:"geography",c:"कक्षा 12",t:"UPSC 2016",qh:"भारत का कौन सा राज्य तीन ओर से समुद्र से घिरा है?",qe:"Which Indian state is surrounded by sea on three sides?",o:[{l:"A",h:"केरल",e:"Kerala"},{l:"B",h:"तमिलनाडु",e:"Tamil Nadu"},{l:"C",h:"गुजरात",e:"Gujarat"},{l:"D",h:"महाराष्ट्र",e:"Maharashtra"}],a:"B",eh:"तमिलनाडु तीन ओर से समुद्र से घिरा है।",ee:"Tamil Nadu is surrounded by sea on three sides."},
+document.getElementById('qcountbtn').textContent = ALL_Q.length + '+ MCQs';
 
-{s:"economics",c:"कक्षा 9",t:"SSC 2019",qh:"भारत में पंचवर्षीय योजना कब शुरू हुई?",qe:"When did Five Year Plan start in India?",o:[{l:"A",h:"1950",e:"1950"},{l:"B",h:"1951",e:"1951"},{l:"C",h:"1952",e:"1952"},{l:"D",h:"1955",e:"1955"}],a:"B",eh:"भारत में पहली पंचवर्षीय योजना 1951 में शुरू हुई।",ee:"First Five Year Plan started in India in 1951."},
-{s:"economics",c:"कक्षा 9",t:"Railway 2020",qh:"भारत में हरित क्रांति कब आई?",qe:"When did Green Revolution come to India?",o:[{l:"A",h:"1950s",e:"1950s"},{l:"B",h:"1960s",e:"1960s"},{l:"C",h:"1970s",e:"1970s"},{l:"D",h:"1980s",e:"1980s"}],a:"B",eh:"हरित क्रांति 1960 के दशक में आई।",ee:"Green Revolution came in 1960s."},
-{s:"economics",c:"कक्षा 10",t:"UPSC 2019",qh:"भारत का केंद्रीय बैंक कौन सा है?",qe:"Central bank of India?",o:[{l:"A",h:"SBI",e:"SBI"},{l:"B",h:"RBI",e:"RBI"},{l:"C",h:"NABARD",e:"NABARD"},{l:"D",h:"SEBI",e:"SEBI"}],a:"B",eh:"RBI भारत का केंद्रीय बैंक है जो 1935 में स्थापित हुआ।",ee:"RBI is India's central bank established in 1935."},
-{s:"economics",c:"कक्षा 10",t:"SSC 2021",qh:"GST का पूरा नाम क्या है?",qe:"Full form of GST?",o:[{l:"A",h:"Goods and Services Tax",e:"Goods and Services Tax"},{l:"B",h:"General Sales Tax",e:"General Sales Tax"},{l:"C",h:"Goods and Sales Tax",e:"Goods and Sales Tax"},{l:"D",h:"General Service Tax",e:"General Service Tax"}],a:"A",eh:"GST यानी Goods and Services Tax।",ee:"GST stands for Goods and Services Tax."},
-{s:"economics",c:"कक्षा 10",t:"Railway 2019",qh:"भारत में GST कब लागू हुआ?",qe:"When was GST implemented in India?",o:[{l:"A",h:"1 जुलाई 2016",e:"1 July 2016"},{l:"B",h:"1 जुलाई 2017",e:"1 July 2017"},{l:"C",h:"1 अप्रैल 2017",e:"1 April 2017"},{l:"D",h:"1 जनवरी 2018",e:"1 January 2018"}],a:"B",eh:"GST 1 जुलाई 2017 को लागू किया गया।",ee:"GST was implemented on 1 July 2017."},
-{s:"economics",c:"कक्षा 10",t:"UPSC 2018",qh:"GDP का पूरा नाम क्या है?",qe:"Full form of GDP?",o:[{l:"A",h:"Gross Domestic Product",e:"Gross Domestic Product"},{l:"B",h:"General Domestic Product",e:"General Domestic Product"},{l:"C",h:"Gross Development Product",e:"Gross Development Product"},{l:"D",h:"Global Domestic Product",e:"Global Domestic Product"}],a:"A",eh:"GDP यानी सकल घरेलू उत्पाद।",ee:"GDP stands for Gross Domestic Product."},
-{s:"economics",c:"कक्षा 11",t:"SSC 2020",qh:"SEBI की स्थापना कब हुई?",qe:"When was SEBI established?",o:[{l:"A",h:"1988",e:"1988"},{l:"B",h:"1990",e:"1990"},{l:"C",h:"1992",e:"1992"},{l:"D",h:"1994",e:"1994"}],a:"C",eh:"SEBI की स्थापना 1992 में हुई।",ee:"SEBI was established in 1992."},
-{s:"economics",c:"कक्षा 11",t:"UPSC 2020",qh:"भारत में नोटबंदी कब हुई?",qe:"When did demonetization happen in India?",o:[{l:"A",h:"8 नवंबर 2015",e:"8 November 2015"},{l:"B",h:"8 नवंबर 2016",e:"8 November 2016"},{l:"C",h:"8 दिसंबर 2016",e:"8 December 2016"},{l:"D",h:"8 नवंबर 2017",e:"8 November 2017"}],a:"B",eh:"नोटबंदी 8 नवंबर 2016 को हुई।",ee:"Demonetization happened on 8 November 2016."},
-{s:"economics",c:"कक्षा 11",t:"Railway 2021",qh:"भारत का सबसे बड़ा बैंक कौन सा है?",qe:"Largest bank of India?",o:[{l:"A",h:"HDFC",e:"HDFC"},{l:"B",h:"SBI",e:"SBI"},{l:"C",h:"PNB",e:"PNB"},{l:"D",h:"BOB",e:"BOB"}],a:"B",eh:"SBI भारत का सबसे बड़ा सार्वजनिक बैंक है।",ee:"SBI is India's largest public sector bank."},
-{s:"economics",c:"कक्षา 12",t:"UPSC 2017",qh:"भारत में बजट कब पेश किया जाता है?",qe:"When is Union Budget presented in India?",o:[{l:"A",h:"1 जनवरी",e:"1 January"},{l:"B",h:"1 फरवरी",e:"1 February"},{l:"C",h:"1 मार्च",e:"1 March"},{l:"D",h:"1 अप्रैल",e:"1 April"}],a:"B",eh:"2017 से बजट 1 फरवरी को पेश किया जाता है।",ee:"Since 2017, Budget is presented on 1 February."},
-{s:"economics",c:"कक्षा 12",t:"SSC 2018",qh:"भारत में आर्थिक उदारीकरण कब हुआ?",qe:"When did economic liberalization happen in India?",o:[{l:"A",h:"1989",e:"1989"},{l:"B",h:"1991",e:"1991"},{l:"C",h:"1993",e:"1993"},{l:"D",h:"1995",e:"1995"}],a:"B",eh:"भारत में आर्थिक उदारीकरण 1991 में मनमोहन सिंह के बजट से हुआ।",ee:"Economic liberalization in India happened in 1991 with Manmohan Singh's budget."},
-{s:"economics",c:"कक्षा 12",t:"Railway 2018",qh:"NABARD की स्थापना कब हुई?",qe:"When was NABARD established?",o:[{l:"A",h:"1980",e:"1980"},{l:"B",h:"1982",e:"1982"},{l:"C",h:"1984",e:"1984"},{l:"D",h:"1986",e:"1986"}],a:"B",eh:"NABARD की स्थापना 1982 में हुई।",ee:"NABARD was established in 1982."},
+var SUBNAMES = {history:"इतिहास", geography:"भूगोल", economics:"अर्थशास्त्र", polity:"राजनीति", mixed:"मिश्रित"};
+var sub = "history";
+var stats = {t:0, c:0, w:0, s:0};
+var deck = [];
+var deckIdx = 0;
+var answered = false;
+var cur = null;
 
-{s:"polity",c:"कक्षा 9",t:"UPSC 2019",qh:"भारत का संविधान कब लागू हुआ?",qe:"When did Indian Constitution come into effect?",o:[{l:"A",h:"15 अगस्त 1947",e:"15 August 1947"},{l:"B",h:"26 जनवरी 1950",e:"26 January 1950"},{l:"C",h:"26 नवंबर 1949",e:"26 November 1949"},{l:"D",h:"2 अक्टूबर 1950",e:"2 October 1950"}],a:"B",eh:"भारत का संविधान 26 जनवरी 1950 को लागू हुआ।",ee:"Indian Constitution came into effect on 26 January 1950."},
-{s:"polity",c:"कक्षा 9",t:"SSC 2020",qh:"भारत के प्रथम राष्ट्रपति कौन थे?",qe:"First President of India?",o:[{l:"A",h:"जवाहरलाल नेहरू",e:"Jawaharlal Nehru"},{l:"B",h:"डॉ. राजेंद्र प्रसाद",e:"Dr. Rajendra Prasad"},{l:"C",h:"सरदार पटेल",e:"Sardar Patel"},{l:"D",h:"डॉ. अंबेडकर",e:"Dr. Ambedkar"}],a:"B",eh:"डॉ. राजेंद्र प्रसाद भारत के प्रथम राष्ट्रपति थे।",ee:"Dr. Rajendra Prasad was first President of India."},
-{s:"polity",c:"कक्षा 9",t:"Railway 2019",qh:"लोकसभा में कुल कितनी सीटें हैं?",qe:"Total seats in Lok Sabha?",o:[{l:"A",h:"542",e:"542"},{l:"B",h:"545",e:"545"},{l:"C",h:"543",e:"543"},{l:"D",h:"550",e:"550"}],a:"C",eh:"लोकसभा में 543 निर्वाचित सीटें हैं।",ee:"Lok Sabha has 543 elected seats."},
-{s:"polity",c:"कक्षा 9",t:"UPSC 2021",qh:"भारतीय संविधान में कितने मौलिक अधिकार हैं?",qe:"Fundamental Rights in Indian Constitution?",o:[{l:"A",h:"5",e:"5"},{l:"B",h:"6",e:"6"},{l:"C",h:"7",e:"7"},{l:"D",h:"8",e:"8"}],a:"B",eh:"भारतीय संविधान में 6 मौलिक अधिकार हैं।",ee:"There are 6 Fundamental Rights in Indian Constitution."},
-{s:"polity",c:"कक्षा 10",t:"SSC 2019",qh:"भारत के मुख्य न्यायाधीश की नियुक्ति कौन करता है?",qe:"Who appoints Chief Justice of India?",o:[{l:"A",h:"प्रधानमंत्री",e:"Prime Minister"},{l:"B",h:"राष्ट्रपति",e:"President"},{l:"C",h:"संसद",e:"Parliament"},{l:"D",h:"उपराष्ट्रपति",e:"Vice President"}],a:"B",eh:"राष्ट्रपति मुख्य न्यायाधीश की नियुक्ति करते हैं।",ee:"President appoints the Chief Justice of India."},
-{s:"polity",c:"कक्षा 10",t:"Railway 2020",qh:"राज्यसभा में कुल कितनी सीटें हैं?",qe:"Total seats in Rajya Sabha?",o:[{l:"A",h:"245",e:"245"},{l:"B",h:"250",e:"250"},{l:"C",h:"238",e:"238"},{l:"D",h:"260",e:"260"}],a:"A",eh:"राज्यसभा में वर्तमान में 245 सीटें हैं।",ee:"Rajya Sabha currently has 245 seats."},
-{s:"polity",c:"कक्षा 10",t:"UPSC 2020",qh:"संविधान सभा के अध्यक्ष कौन थे?",qe:"President of Constituent Assembly?",o:[{l:"A",h:"डॉ. अंबेडकर",e:"Dr. Ambedkar"},{l:"B",h:"डॉ. राजेंद्र प्रसाद",e:"Dr. Rajendra Prasad"},{l:"C",h:"जवाहरलाल नेहरू",e:"Jawaharlal Nehru"},{l:"D",h:"सरदार पटेल",e:"Sardar Patel"}],a:"B",eh:"डॉ. राजेंद्र प्रसाद संविधान सभा के अध्यक्ष थे।",ee:"Dr. Rajendra Prasad was President of Constituent Assembly."},
-{s:"polity",c:"कक्षा 10",t:"SSC 2021",qh:"भारतीय संविधान के जनक कौन हैं?",qe:"Father of Indian Constitution?",o:[{l:"A",h:"जवाहरलाल नेहरू",e:"Jawaharlal Nehru"},{l:"B",h:"डॉ. बी.आर. अंबेडकर",e:"Dr. B.R. Ambedkar"},{l:"C",h:"सरदार पटेल",e:"Sardar Patel"},{l:"D",h:"राजेंद्र प्रसाद",e:"Rajendra Prasad"}],a:"B",eh:"डॉ. बी.आर. अंबेडकर को भारतीय संविधान का जनक कहा जाता है।",ee:"Dr. B.R. Ambedkar is called Father of Indian Constitution."},
-{s:"polity",c:"कक्षा 11",t:"UPSC 2018",qh:"भारत में पहले आम चुनाव कब हुए?",qe:"When were first general elections in India?",o:[{l:"A",h:"1950",e:"1950"},{l:"B",h:"1951-52",e:"1951-52"},{l:"C",h:"1953",e:"1953"},{l:"D",h:"1955",e:"1955"}],a:"B",eh:"भारत में पहले आम चुनाव 1951-52 में हुए।",ee:"First general elections in India were in 1951-52."},
-{s:"polity",c:"कक्षा 11",t:"SSC 2019",qh:"भारत के उपराष्ट्रपति का कार्यकाल कितना होता है?",qe:"Term of Vice President of India?",o:[{l:"A",h:"4 साल",e:"4 years"},{l:"B",h:"5 साल",e:"5 years"},{l:"C",h:"6 साल",e:"6 years"},{l:"D",h:"3 साल",e:"3 years"}],a:"B",eh:"उपराष्ट्रपति का कार्यकाल 5 साल होता है।",ee:"Vice President has a term of 5 years."},
-{s:"polity",c:"कक्षा 11",t:"Railway 2021",qh:"राज्यसभा के सभापति कौन होते हैं?",qe:"Who is Chairman of Rajya Sabha?",o:[{l:"A",h:"राष्ट्रपति",e:"President"},{l:"B",h:"प्रधानमंत्री",e:"Prime Minister"},{l:"C",h:"उपराष्ट्रपति",e:"Vice President"},{l:"D",h:"लोकसभा अध्यक्ष",e:"Lok Sabha Speaker"}],a:"C",eh:"उपराष्ट्रपति राज्यसभा के पदेन सभापति होते हैं।",ee:"Vice President is ex-officio Chairman of Rajya Sabha."},
-{s:"polity",c:"कक्षा 12",t:"UPSC 2017",qh:"भारत के महान्यायवादी किसके द्वारा नियुक्त होते हैं?",qe:"Who appoints Attorney General of India?",o:[{l:"A",h:"प्रधानमंत्री",e:"Prime Minister"},{l:"B",h:"राष्ट्रपति",e:"President"},{l:"C",h:"सुप्रीम कोर्ट",e:"Supreme Court"},{l:"D",h:"लोकसभा",e:"Lok Sabha"}],a:"B",eh:"भारत का महान्यायवादी राष्ट्रपति द्वारा नियुक्त किया जाता है।",ee:"Attorney General of India is appointed by President."},
-{s:"polity",c:"कक्षा 12",t:"SSC 2018",qh:"भारतीय संसद के कितने सदन हैं?",qe:"How many houses does Indian Parliament have?",o:[{l:"A",h:"1",e:"1"},{l:"B",h:"2",e:"2"},{l:"C",h:"3",e:"3"},{l:"D",h:"4",e:"4"}],a:"B",eh:"भारतीय संसद के दो सदन हैं - लोकसभा और राज्यसभा।",ee:"Indian Parliament has two houses - Lok Sabha and Rajya Sabha."},
-{s:"polity",c:"कक्षा 12",t:"Railway 2019",qh:"भारत के प्रथम उपप्रधानमंत्री कौन थे?",qe:"Who was first Deputy PM of India?",o:[{l:"A",h:"जवाहरलाल नेहरू",e:"Jawaharlal Nehru"},{l:"B",h:"सरदार पटेल",e:"Sardar Patel"},{l:"C",h:"मोरारजी देसाई",e:"Morarji Desai"},{l:"D",h:"जगजीवन राम",e:"Jagjivan Ram"}],a:"B",eh:"सरदार वल्लभभाई पटेल भारत के प्रथम उपप्रधानमंत्री थे।",ee:"Sardar Vallabhbhai Patel was first Deputy PM of India."}
-];
+// Fisher-Yates shuffle with seed based on subject+date
+// This makes the order same for same user on same day, but different per subject
+function shuffle(arr) {
+  var a = arr.slice();
+  for(var i = a.length-1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i+1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
 
-function setSub(btn,s){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');sub=s;used=[];showQ();}
-function getQ(){var pool=sub==='mixed'?Q:Q.filter(q=>q.s===sub);if(!pool.length)pool=Q;if(used.length>=pool.length)used=[];var available=pool.filter((_,i)=>!used.includes(pool.indexOf(Q[pool.indexOf(_)])));if(!available.length){used=[];available=pool;}var q=available[Math.floor(Math.random()*available.length)];used.push(Q.indexOf(q));return q;}
-function showQ(){answered=false;cur=getQ();document.getElementById('next').classList.remove('show');document.getElementById('exp').style.display='none';var pool=sub==='mixed'?Q:Q.filter(q=>q.s===sub);document.getElementById('qcount').textContent='📊 '+pool.length+' प्रश्न उपलब्ध | '+pool.length+' Questions Available';document.getElementById('qb').textContent=cur.c+' | '+SUBNAMES[sub];document.getElementById('qt').textContent=cur.t;document.getElementById('qh').textContent=cur.qh;document.getElementById('qe').textContent=cur.qe;var o=document.getElementById('opts');o.innerHTML='';cur.o.forEach(function(opt){var b=document.createElement('button');b.className='opt';b.innerHTML='<div class="ol">'+opt.l+'</div><div><div class="ohi">'+opt.h+'</div><div class="oen">'+opt.e+'</div></div>';b.onclick=function(){pick(opt.l,b);};o.appendChild(b);});}
-function pick(letter,btn){if(answered)return;answered=true;stats.t++;document.querySelectorAll('.opt').forEach(b=>b.disabled=true);if(letter===cur.a){btn.classList.add('correct');stats.c++;stats.s++;if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)Telegram.WebApp.HapticFeedback.notificationOccurred('success');}else{btn.classList.add('wrong');stats.w++;stats.s=0;document.querySelectorAll('.opt').forEach(b=>{if(b.querySelector('.ol').textContent===cur.a)b.classList.add('show');});if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)Telegram.WebApp.HapticFeedback.notificationOccurred('error');}document.getElementById('t').textContent=stats.t;document.getElementById('c').textContent=stats.c;document.getElementById('w').textContent=stats.w;document.getElementById('s').textContent=stats.s+'🔥';document.getElementById('eh').textContent=cur.eh;document.getElementById('ee').textContent=cur.ee;document.getElementById('exp').style.display='block';document.getElementById('next').classList.add('show');}
+// Storage key per subject
+function storageKey(s) {
+  return 'ncert_deck_' + s;
+}
+
+function getPool() {
+  return sub === 'mixed' ? ALL_Q : ALL_Q.filter(function(q){ return q.s === sub; });
+}
+
+// Build question IDs from pool
+function poolIds(pool) {
+  return pool.map(function(q, i){ return i; });
+}
+
+// Save current deck progress to localStorage
+function saveDeck() {
+  try {
+    var data = {
+      order: deck.map(function(q){ return ALL_Q.indexOf(q); }),
+      idx: deckIdx
+    };
+    localStorage.setItem(storageKey(sub), JSON.stringify(data));
+  } catch(e) {}
+}
+
+// Load saved deck or create new shuffled deck
+function loadOrCreateDeck() {
+  var pool = getPool();
+  try {
+    var saved = localStorage.getItem(storageKey(sub));
+    if(saved) {
+      var data = JSON.parse(saved);
+      // Restore deck from saved order
+      var restored = data.order.map(function(i){ return ALL_Q[i]; }).filter(function(q){ return q && q.s === (sub==='mixed'?q.s:sub); });
+      // Only restore if pool size matches (i.e. no new questions added)
+      if(restored.length === pool.length) {
+        deck = restored;
+        deckIdx = data.idx || 0;
+        // If already completed, reset
+        if(deckIdx >= deck.length) {
+          deck = shuffle(pool);
+          deckIdx = 0;
+          saveDeck();
+        }
+        return;
+      }
+    }
+  } catch(e) {}
+  // Fresh deck
+  deck = shuffle(pool);
+  deckIdx = 0;
+  saveDeck();
+}
+
+function setSub(btn, s) {
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  sub = s;
+  stats = {t:0, c:0, w:0, s:0};
+  updateStats();
+  loadOrCreateDeck();
+  renderQ();
+}
+
+function renderQ() {
+  if(deckIdx >= deck.length) {
+    showComplete();
+    return;
+  }
+  answered = false;
+  cur = deck[deckIdx];
+
+  document.getElementById('next').classList.remove('show');
+  document.getElementById('exp').style.display = 'none';
+
+  var pct = Math.round((deckIdx / deck.length) * 100);
+  document.getElementById('progfill').style.width = pct + '%';
+  document.getElementById('qnum').textContent = 'प्रश्न ' + (deckIdx+1) + '/' + deck.length;
+  document.getElementById('qpct').textContent = pct + '% पूरा';
+
+  document.getElementById('qb').textContent = cur.c + ' | ' + SUBNAMES[sub];
+  document.getElementById('qt').textContent = cur.t;
+  document.getElementById('qh').textContent = cur.qh;
+  document.getElementById('qe').textContent = cur.qe;
+
+  var o = document.getElementById('opts');
+  o.innerHTML = '';
+  cur.o.forEach(function(opt) {
+    var b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = '<div class="ol">'+opt.l+'</div><div><div class="ohi">'+opt.h+'</div><div class="oen">'+opt.e+'</div></div>';
+    b.onclick = function(){ pick(opt.l, b); };
+    o.appendChild(b);
+  });
+
+  // Make sure card is visible
+  var qa = document.getElementById('quizarea');
+  if(!document.getElementById('card').parentElement || document.getElementById('card').parentElement !== qa) {
+    qa.innerHTML = '';
+    qa.appendChild(document.getElementById('card'));
+  }
+}
+
+function pick(letter, btn) {
+  if(answered) return;
+  answered = true;
+  stats.t++;
+  document.querySelectorAll('.opt').forEach(function(b){ b.disabled = true; });
+
+  if(letter === cur.a) {
+    btn.classList.add('correct');
+    stats.c++; stats.s++;
+    if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
+      Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+  } else {
+    btn.classList.add('wrong');
+    stats.w++; stats.s = 0;
+    document.querySelectorAll('.opt').forEach(function(b){
+      if(b.querySelector('.ol').textContent === cur.a) b.classList.add('show');
+    });
+    if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
+      Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+  }
+  updateStats();
+  document.getElementById('eh').textContent = cur.eh;
+  document.getElementById('ee').textContent = cur.ee;
+  document.getElementById('exp').style.display = 'block';
+  document.getElementById('next').classList.add('show');
+}
+
+function nextQ() {
+  deckIdx++;
+  saveDeck(); // Save progress after every question
+  renderQ();
+}
+
+function updateStats() {
+  document.getElementById('t').textContent = stats.t;
+  document.getElementById('c').textContent = stats.c;
+  document.getElementById('w').textContent = stats.w;
+  document.getElementById('s').textContent = stats.s + '🔥';
+}
+
+function showComplete() {
+  var pct = stats.t > 0 ? Math.round((stats.c/stats.t)*100) : 0;
+  var emoji = pct>=80?'🏆':pct>=60?'👍':'📚';
+  document.getElementById('progfill').style.width = '100%';
+  document.getElementById('qnum').textContent = 'सभी प्रश्न पूरे! ✅';
+  document.getElementById('qpct').textContent = '100% पूरा';
+
+  // Clear saved progress so next time fresh shuffle
+  try { localStorage.removeItem(storageKey(sub)); } catch(e) {}
+
+  document.getElementById('quizarea').innerHTML =
+    '<div class="complete-card">'
+    + '<div style="font-size:48px">'+emoji+'</div>'
+    + '<h2>शाबाश! 🎉</h2>'
+    + '<p>सभी <b>'+deck.length+'</b> प्रश्न पूरे हो गए!<br>'
+    + 'सही: <b>'+stats.c+'/'+stats.t+'</b> ('+pct+'%)<br><br>'
+    + '🔄 अब दोबारा शुरू करने पर<br>नए क्रम में आएंगे!</p>'
+    + '<button class="restart-btn" onclick="restartDeck()">🔄 फिर से शुरू करें</button>'
+    + '</div>';
+}
+
+function restartDeck() {
+  stats = {t:0, c:0, w:0, s:0};
+  updateStats();
+  var pool = getPool();
+  deck = shuffle(pool);
+  deckIdx = 0;
+  saveDeck();
+  // Re-attach card
+  var qa = document.getElementById('quizarea');
+  qa.innerHTML = '';
+  qa.appendChild(document.getElementById('card'));
+  renderQ();
+}
+
+// Start
+loadOrCreateDeck();
+renderQ();
 </script>
 </body>
 </html>
