@@ -28,7 +28,7 @@ body{font-family:'Segoe UI',sans-serif;background:#FFF8F0;min-height:100vh;}
 .pbtn{background:#FFB300;color:#333;border:none;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;}
 .main{padding:12px;}
 .progress-bar{background:#F0E6D3;border-radius:10px;height:8px;margin-bottom:10px;overflow:hidden;}
-.progress-fill{background:linear-gradient(90deg,#FF6B00,#FFB300);height:100%;border-radius:10px;transition:width 0.3s;}
+.progress-fill{background:linear-gradient(90deg,#FF6B00,#FFB300);height:100%;border-radius:10px;transition:width 0.4s;}
 .qinfo{display:flex;justify-content:space-between;font-size:11px;color:#888;margin-bottom:8px;}
 .card{background:white;border-radius:16px;padding:16px;box-shadow:0 4px 20px rgba(255,107,0,0.15);border-left:5px solid #FF6B00;}
 .meta{display:flex;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:4px;}
@@ -106,7 +106,6 @@ body{font-family:'Segoe UI',sans-serif;background:#FFF8F0;min-height:100vh;}
 <script>
 if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
 
-// Combine all questions
 var ALL_Q = [].concat(
   (typeof Q_HISTORY!=='undefined'?Q_HISTORY:[]),
   (typeof Q_GEOGRAPHY!=='undefined'?Q_GEOGRAPHY:[]),
@@ -115,207 +114,155 @@ var ALL_Q = [].concat(
 );
 
 document.getElementById('qcountbtn').textContent = ALL_Q.length + '+ MCQs';
+var SUBNAMES={history:"इतिहास",geography:"भूगोल",economics:"अर्थशास्त्र",polity:"राजनीति",mixed:"मिश्रित"};
+var sub="history", stats={t:0,c:0,w:0,s:0}, deck=[], deckIdx=0, answered=false, cur=null;
 
-var SUBNAMES = {history:"इतिहास", geography:"भूगोल", economics:"अर्थशास्त्र", polity:"राजनीति", mixed:"मिश्रित"};
-var sub = "history";
-var stats = {t:0, c:0, w:0, s:0};
-var deck = [];
-var deckIdx = 0;
-var answered = false;
-var cur = null;
-
-// Fisher-Yates shuffle with seed based on subject+date
-// This makes the order same for same user on same day, but different per subject
-function shuffle(arr) {
-  var a = arr.slice();
-  for(var i = a.length-1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i+1));
-    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+function shuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var tmp=a[i];a[i]=a[j];a[j]=tmp;
   }
   return a;
 }
 
-// Storage key per subject
-function storageKey(s) {
-  return 'ncert_deck_' + s;
+function sKey(s){return 'ncert_v2_'+s;}
+
+function getPool(){return sub==='mixed'?ALL_Q:ALL_Q.filter(function(q){return q.s===sub;});}
+
+function saveDeck(){
+  try{
+    var idxMap={};
+    ALL_Q.forEach(function(q,i){idxMap[q.qh.substring(0,20)]=i;});
+    var order=deck.map(function(q){return ALL_Q.indexOf(q);});
+    localStorage.setItem(sKey(sub),JSON.stringify({order:order,idx:deckIdx}));
+  }catch(e){}
 }
 
-function getPool() {
-  return sub === 'mixed' ? ALL_Q : ALL_Q.filter(function(q){ return q.s === sub; });
-}
-
-// Build question IDs from pool
-function poolIds(pool) {
-  return pool.map(function(q, i){ return i; });
-}
-
-// Save current deck progress to localStorage
-function saveDeck() {
-  try {
-    var data = {
-      order: deck.map(function(q){ return ALL_Q.indexOf(q); }),
-      idx: deckIdx
-    };
-    localStorage.setItem(storageKey(sub), JSON.stringify(data));
-  } catch(e) {}
-}
-
-// Load saved deck or create new shuffled deck
-function loadOrCreateDeck() {
-  var pool = getPool();
-  try {
-    var saved = localStorage.getItem(storageKey(sub));
-    if(saved) {
-      var data = JSON.parse(saved);
-      // Restore deck from saved order
-      var restored = data.order.map(function(i){ return ALL_Q[i]; }).filter(function(q){ return q && q.s === (sub==='mixed'?q.s:sub); });
-      // Only restore if pool size matches (i.e. no new questions added)
-      if(restored.length === pool.length) {
-        deck = restored;
-        deckIdx = data.idx || 0;
-        // If already completed, reset
-        if(deckIdx >= deck.length) {
-          deck = shuffle(pool);
-          deckIdx = 0;
-          saveDeck();
+function loadDeck(){
+  var pool=getPool();
+  try{
+    var saved=localStorage.getItem(sKey(sub));
+    if(saved){
+      var data=JSON.parse(saved);
+      var restored=data.order
+        .map(function(i){return ALL_Q[i];})
+        .filter(function(q){return q&&(sub==='mixed'||q.s===sub);});
+      if(restored.length===pool.length){
+        deck=restored;
+        deckIdx=Math.min(data.idx||0, deck.length);
+        if(deckIdx>=deck.length){
+          deck=shuffle(pool);deckIdx=0;saveDeck();
         }
         return;
       }
     }
-  } catch(e) {}
-  // Fresh deck
-  deck = shuffle(pool);
-  deckIdx = 0;
-  saveDeck();
+  }catch(e){}
+  deck=shuffle(pool);deckIdx=0;saveDeck();
 }
 
-function setSub(btn, s) {
-  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+function setSub(btn,s){
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
-  sub = s;
-  stats = {t:0, c:0, w:0, s:0};
+  sub=s;
+  stats={t:0,c:0,w:0,s:0};
   updateStats();
-  loadOrCreateDeck();
+  loadDeck();
+  showCard();
   renderQ();
 }
 
-function renderQ() {
-  if(deckIdx >= deck.length) {
-    showComplete();
-    return;
-  }
-  answered = false;
-  cur = deck[deckIdx];
-
-  document.getElementById('next').classList.remove('show');
-  document.getElementById('exp').style.display = 'none';
-
-  var pct = Math.round((deckIdx / deck.length) * 100);
-  document.getElementById('progfill').style.width = pct + '%';
-  document.getElementById('qnum').textContent = 'प्रश्न ' + (deckIdx+1) + '/' + deck.length;
-  document.getElementById('qpct').textContent = pct + '% पूरा';
-
-  document.getElementById('qb').textContent = cur.c + ' | ' + SUBNAMES[sub];
-  document.getElementById('qt').textContent = cur.t;
-  document.getElementById('qh').textContent = cur.qh;
-  document.getElementById('qe').textContent = cur.qe;
-
-  var o = document.getElementById('opts');
-  o.innerHTML = '';
-  cur.o.forEach(function(opt) {
-    var b = document.createElement('button');
-    b.className = 'opt';
-    b.innerHTML = '<div class="ol">'+opt.l+'</div><div><div class="ohi">'+opt.h+'</div><div class="oen">'+opt.e+'</div></div>';
-    b.onclick = function(){ pick(opt.l, b); };
-    o.appendChild(b);
-  });
-
-  // Make sure card is visible
-  var qa = document.getElementById('quizarea');
-  if(!document.getElementById('card').parentElement || document.getElementById('card').parentElement !== qa) {
-    qa.innerHTML = '';
-    qa.appendChild(document.getElementById('card'));
-  }
+function showCard(){
+  var qa=document.getElementById('quizarea');
+  var card=document.getElementById('card');
+  if(card.parentElement!==qa){qa.innerHTML='';qa.appendChild(card);}
 }
 
-function pick(letter, btn) {
-  if(answered) return;
-  answered = true;
-  stats.t++;
-  document.querySelectorAll('.opt').forEach(function(b){ b.disabled = true; });
+function renderQ(){
+  if(deckIdx>=deck.length){showComplete();return;}
+  answered=false;cur=deck[deckIdx];
+  document.getElementById('next').classList.remove('show');
+  document.getElementById('exp').style.display='none';
+  var pct=Math.round((deckIdx/deck.length)*100);
+  document.getElementById('progfill').style.width=pct+'%';
+  document.getElementById('qnum').textContent='प्रश्न '+(deckIdx+1)+'/'+deck.length;
+  document.getElementById('qpct').textContent=pct+'% पूरा';
+  document.getElementById('qb').textContent=cur.c+' | '+SUBNAMES[sub];
+  document.getElementById('qt').textContent=cur.t;
+  document.getElementById('qh').textContent=cur.qh;
+  document.getElementById('qe').textContent=cur.qe;
+  var o=document.getElementById('opts');o.innerHTML='';
+  cur.o.forEach(function(opt){
+    var b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML='<div class="ol">'+opt.l+'</div><div><div class="ohi">'+opt.h+'</div><div class="oen">'+opt.e+'</div></div>';
+    b.onclick=function(){pick(opt.l,b);};
+    o.appendChild(b);
+  });
+}
 
-  if(letter === cur.a) {
-    btn.classList.add('correct');
-    stats.c++; stats.s++;
+function pick(letter,btn){
+  if(answered)return;
+  answered=true;stats.t++;
+  document.querySelectorAll('.opt').forEach(function(b){b.disabled=true;});
+  if(letter===cur.a){
+    btn.classList.add('correct');stats.c++;stats.s++;
     if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
       Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-  } else {
-    btn.classList.add('wrong');
-    stats.w++; stats.s = 0;
+  }else{
+    btn.classList.add('wrong');stats.w++;stats.s=0;
     document.querySelectorAll('.opt').forEach(function(b){
-      if(b.querySelector('.ol').textContent === cur.a) b.classList.add('show');
+      if(b.querySelector('.ol').textContent===cur.a)b.classList.add('show');
     });
     if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
       Telegram.WebApp.HapticFeedback.notificationOccurred('error');
   }
   updateStats();
-  document.getElementById('eh').textContent = cur.eh;
-  document.getElementById('ee').textContent = cur.ee;
-  document.getElementById('exp').style.display = 'block';
+  document.getElementById('eh').textContent=cur.eh;
+  document.getElementById('ee').textContent=cur.ee;
+  document.getElementById('exp').style.display='block';
   document.getElementById('next').classList.add('show');
 }
 
-function nextQ() {
+function nextQ(){
   deckIdx++;
-  saveDeck(); // Save progress after every question
-  renderQ();
-}
-
-function updateStats() {
-  document.getElementById('t').textContent = stats.t;
-  document.getElementById('c').textContent = stats.c;
-  document.getElementById('w').textContent = stats.w;
-  document.getElementById('s').textContent = stats.s + '🔥';
-}
-
-function showComplete() {
-  var pct = stats.t > 0 ? Math.round((stats.c/stats.t)*100) : 0;
-  var emoji = pct>=80?'🏆':pct>=60?'👍':'📚';
-  document.getElementById('progfill').style.width = '100%';
-  document.getElementById('qnum').textContent = 'सभी प्रश्न पूरे! ✅';
-  document.getElementById('qpct').textContent = '100% पूरा';
-
-  // Clear saved progress so next time fresh shuffle
-  try { localStorage.removeItem(storageKey(sub)); } catch(e) {}
-
-  document.getElementById('quizarea').innerHTML =
-    '<div class="complete-card">'
-    + '<div style="font-size:48px">'+emoji+'</div>'
-    + '<h2>शाबाश! 🎉</h2>'
-    + '<p>सभी <b>'+deck.length+'</b> प्रश्न पूरे हो गए!<br>'
-    + 'सही: <b>'+stats.c+'/'+stats.t+'</b> ('+pct+'%)<br><br>'
-    + '🔄 अब दोबारा शुरू करने पर<br>नए क्रम में आएंगे!</p>'
-    + '<button class="restart-btn" onclick="restartDeck()">🔄 फिर से शुरू करें</button>'
-    + '</div>';
-}
-
-function restartDeck() {
-  stats = {t:0, c:0, w:0, s:0};
-  updateStats();
-  var pool = getPool();
-  deck = shuffle(pool);
-  deckIdx = 0;
   saveDeck();
-  // Re-attach card
-  var qa = document.getElementById('quizarea');
-  qa.innerHTML = '';
-  qa.appendChild(document.getElementById('card'));
+  showCard();
   renderQ();
 }
 
-// Start
-loadOrCreateDeck();
-renderQ();
+function updateStats(){
+  document.getElementById('t').textContent=stats.t;
+  document.getElementById('c').textContent=stats.c;
+  document.getElementById('w').textContent=stats.w;
+  document.getElementById('s').textContent=stats.s+'🔥';
+}
+
+function showComplete(){
+  var pct=stats.t>0?Math.round((stats.c/stats.t)*100):0;
+  var emoji=pct>=80?'🏆':pct>=60?'👍':'📚';
+  document.getElementById('progfill').style.width='100%';
+  document.getElementById('qnum').textContent='सभी प्रश्न पूरे! ✅';
+  document.getElementById('qpct').textContent='100% पूरा';
+  try{localStorage.removeItem(sKey(sub));}catch(e){}
+  document.getElementById('quizarea').innerHTML=
+    '<div class="complete-card">'
+    +'<div style="font-size:48px">'+emoji+'</div>'
+    +'<h2>शाबाश! 🎉</h2>'
+    +'<p>सभी <b>'+deck.length+'</b> प्रश्न पूरे!<br>'
+    +'सही: <b>'+stats.c+'/'+stats.t+'</b> ('+pct+'%)<br><br>'
+    +'🔄 अब नए क्रम में शुरू होगा!</p>'
+    +'<button class="restart-btn" onclick="restartDeck()">🔄 फिर से शुरू करें</button>'
+    +'</div>';
+}
+
+function restartDeck(){
+  stats={t:0,c:0,w:0,s:0};updateStats();
+  deck=shuffle(getPool());deckIdx=0;saveDeck();
+  showCard();renderQ();
+}
+
+loadDeck();showCard();renderQ();
 </script>
 </body>
 </html>
