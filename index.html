@@ -46,7 +46,7 @@ body{font-family:'Segoe UI',sans-serif;background:#FFF8F0;min-height:100vh;}
 .opt.correct .ol{background:#2E7D32;color:white;}
 .opt.wrong{border-color:#C62828;background:#FFEBEE;}
 .opt.wrong .ol{background:#C62828;color:white;}
-.opt.show{border-color:#2E7D32;background:#E8F5E9;opacity:0.8;}
+.opt.show-ans{border-color:#2E7D32;background:#E8F5E9;opacity:0.8;}
 .exp{margin-top:12px;padding:12px;background:#FFF8E1;border-radius:10px;border-left:4px solid #FFB300;display:none;}
 .etitle{font-size:12px;font-weight:700;color:#7B5800;margin-bottom:6px;}
 .ehi{font-size:13px;color:#5D4037;line-height:1.6;}
@@ -57,6 +57,7 @@ body{font-family:'Segoe UI',sans-serif;background:#FFF8F0;min-height:100vh;}
 .complete-card h2{font-size:22px;margin-bottom:8px;}
 .complete-card p{color:#666;font-size:14px;margin-bottom:16px;line-height:1.8;}
 .restart-btn{background:linear-gradient(135deg,#FF6B00,#E55A00);color:white;border:none;border-radius:14px;padding:14px 28px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
+.loading{text-align:center;padding:40px;color:#FF6B00;font-size:16px;font-weight:700;}
 </style>
 </head>
 <body>
@@ -88,181 +89,197 @@ body{font-family:'Segoe UI',sans-serif;background:#FFF8F0;min-height:100vh;}
     <span id="qpct">0% पूरा</span>
   </div>
   <div id="quizarea">
-    <div class="card" id="card">
-      <div class="meta"><span class="badge" id="qb"></span><span class="etag" id="qt"></span></div>
-      <div class="qhi" id="qh"></div>
-      <div class="qen" id="qe"></div>
-      <div class="opts" id="opts"></div>
-      <div class="exp" id="exp">
-        <div class="etitle">💡 व्याख्या | Explanation</div>
-        <div class="ehi" id="eh"></div>
-        <div class="een" id="ee"></div>
-      </div>
-      <button class="next" id="next" onclick="nextQ()">➡️ अगला प्रश्न | Next Question</button>
-    </div>
+    <div class="loading">⏳ प्रश्न लोड हो रहे हैं...</div>
   </div>
 </div>
 
 <script>
 if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
 
-var ALL_Q = [].concat(
-  (typeof Q_HISTORY!=='undefined'?Q_HISTORY:[]),
-  (typeof Q_GEOGRAPHY!=='undefined'?Q_GEOGRAPHY:[]),
-  (typeof Q_POLITY!=='undefined'?Q_POLITY:[]),
-  (typeof Q_ECONOMICS!=='undefined'?Q_ECONOMICS:[])
-);
+// VERSION - change this to force reset old localStorage
+var VERSION = 'v3';
 
-document.getElementById('qcountbtn').textContent = ALL_Q.length + '+ MCQs';
-var SUBNAMES={history:"इतिहास",geography:"भूगोल",economics:"अर्थशास्त्र",polity:"राजनीति",mixed:"मिश्रित"};
-var sub="history", stats={t:0,c:0,w:0,s:0}, deck=[], deckIdx=0, answered=false, cur=null;
+// Wait for all scripts to load
+window.addEventListener('load', function(){
+  init();
+});
 
-function shuffle(arr){
-  var a=arr.slice();
-  for(var i=a.length-1;i>0;i--){
-    var j=Math.floor(Math.random()*(i+1));
-    var tmp=a[i];a[i]=a[j];a[j]=tmp;
-  }
-  return a;
-}
+function init(){
+  var ALL_Q = [].concat(
+    (typeof Q_HISTORY!=='undefined'?Q_HISTORY:[]),
+    (typeof Q_GEOGRAPHY!=='undefined'?Q_GEOGRAPHY:[]),
+    (typeof Q_POLITY!=='undefined'?Q_POLITY:[]),
+    (typeof Q_ECONOMICS!=='undefined'?Q_ECONOMICS:[])
+  );
 
-function sKey(s){return 'ncert_v2_'+s;}
-
-function getPool(){return sub==='mixed'?ALL_Q:ALL_Q.filter(function(q){return q.s===sub;});}
-
-function saveDeck(){
-  try{
-    var idxMap={};
-    ALL_Q.forEach(function(q,i){idxMap[q.qh.substring(0,20)]=i;});
-    var order=deck.map(function(q){return ALL_Q.indexOf(q);});
-    localStorage.setItem(sKey(sub),JSON.stringify({order:order,idx:deckIdx}));
-  }catch(e){}
-}
-
-function loadDeck(){
-  var pool=getPool();
-  try{
-    var saved=localStorage.getItem(sKey(sub));
-    if(saved){
-      var data=JSON.parse(saved);
-      var restored=data.order
-        .map(function(i){return ALL_Q[i];})
-        .filter(function(q){return q&&(sub==='mixed'||q.s===sub);});
-      if(restored.length===pool.length){
-        deck=restored;
-        deckIdx=Math.min(data.idx||0, deck.length);
-        if(deckIdx>=deck.length){
-          deck=shuffle(pool);deckIdx=0;saveDeck();
-        }
-        return;
-      }
+  // Clear old broken localStorage if version changed
+  try {
+    var savedVersion = localStorage.getItem('quiz_version');
+    if(savedVersion !== VERSION) {
+      // Clear all old keys
+      var keys = [];
+      for(var i=0;i<localStorage.length;i++) keys.push(localStorage.key(i));
+      keys.forEach(function(k){ if(k.indexOf('ncert_')===0) localStorage.removeItem(k); });
+      localStorage.setItem('quiz_version', VERSION);
     }
-  }catch(e){}
-  deck=shuffle(pool);deckIdx=0;saveDeck();
-}
+  } catch(e){}
 
-function setSub(btn,s){
-  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  sub=s;
-  stats={t:0,c:0,w:0,s:0};
-  updateStats();
-  loadDeck();
-  showCard();
-  renderQ();
-}
-
-function showCard(){
-  var qa=document.getElementById('quizarea');
-  var card=document.getElementById('card');
-  if(card.parentElement!==qa){qa.innerHTML='';qa.appendChild(card);}
-}
-
-function renderQ(){
-  if(deckIdx>=deck.length){showComplete();return;}
-  answered=false;cur=deck[deckIdx];
-  document.getElementById('next').classList.remove('show');
-  document.getElementById('exp').style.display='none';
-  var pct=Math.round((deckIdx/deck.length)*100);
-  document.getElementById('progfill').style.width=pct+'%';
-  document.getElementById('qnum').textContent='प्रश्न '+(deckIdx+1)+'/'+deck.length;
-  document.getElementById('qpct').textContent=pct+'% पूरा';
-  document.getElementById('qb').textContent=cur.c+' | '+SUBNAMES[sub];
-  document.getElementById('qt').textContent=cur.t;
-  document.getElementById('qh').textContent=cur.qh;
-  document.getElementById('qe').textContent=cur.qe;
-  var o=document.getElementById('opts');o.innerHTML='';
-  cur.o.forEach(function(opt){
-    var b=document.createElement('button');
-    b.className='opt';
-    b.innerHTML='<div class="ol">'+opt.l+'</div><div><div class="ohi">'+opt.h+'</div><div class="oen">'+opt.e+'</div></div>';
-    b.onclick=function(){pick(opt.l,b);};
-    o.appendChild(b);
-  });
-}
-
-function pick(letter,btn){
-  if(answered)return;
-  answered=true;stats.t++;
-  document.querySelectorAll('.opt').forEach(function(b){b.disabled=true;});
-  if(letter===cur.a){
-    btn.classList.add('correct');stats.c++;stats.s++;
-    if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
-      Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-  }else{
-    btn.classList.add('wrong');stats.w++;stats.s=0;
-    document.querySelectorAll('.opt').forEach(function(b){
-      if(b.querySelector('.ol').textContent===cur.a)b.classList.add('show');
-    });
-    if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
-      Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+  if(ALL_Q.length === 0){
+    document.getElementById('quizarea').innerHTML = '<div class="loading">❌ MCQ files load नहीं हुईं!<br>q_history.js, q_geography.js,<br>q_polity.js, q_economics.js<br>GitHub पर add करो!</div>';
+    document.getElementById('qcountbtn').textContent = '0 MCQs ❌';
+    return;
   }
-  updateStats();
-  document.getElementById('eh').textContent=cur.eh;
-  document.getElementById('ee').textContent=cur.ee;
-  document.getElementById('exp').style.display='block';
-  document.getElementById('next').classList.add('show');
-}
 
-function nextQ(){
-  deckIdx++;
-  saveDeck();
-  showCard();
-  renderQ();
-}
+  document.getElementById('qcountbtn').textContent = ALL_Q.length + '+ MCQs ✅';
 
-function updateStats(){
-  document.getElementById('t').textContent=stats.t;
-  document.getElementById('c').textContent=stats.c;
-  document.getElementById('w').textContent=stats.w;
-  document.getElementById('s').textContent=stats.s+'🔥';
-}
+  var SUBNAMES={history:"इतिहास",geography:"भूगोल",economics:"अर्थशास्त्र",polity:"राजनीति",mixed:"मिश्रित"};
+  var sub="history", stats={t:0,c:0,w:0,s:0}, deck=[], deckIdx=0, answered=false, cur=null;
 
-function showComplete(){
-  var pct=stats.t>0?Math.round((stats.c/stats.t)*100):0;
-  var emoji=pct>=80?'🏆':pct>=60?'👍':'📚';
-  document.getElementById('progfill').style.width='100%';
-  document.getElementById('qnum').textContent='सभी प्रश्न पूरे! ✅';
-  document.getElementById('qpct').textContent='100% पूरा';
-  try{localStorage.removeItem(sKey(sub));}catch(e){}
-  document.getElementById('quizarea').innerHTML=
-    '<div class="complete-card">'
-    +'<div style="font-size:48px">'+emoji+'</div>'
-    +'<h2>शाबाश! 🎉</h2>'
-    +'<p>सभी <b>'+deck.length+'</b> प्रश्न पूरे!<br>'
-    +'सही: <b>'+stats.c+'/'+stats.t+'</b> ('+pct+'%)<br><br>'
-    +'🔄 अब नए क्रम में शुरू होगा!</p>'
-    +'<button class="restart-btn" onclick="restartDeck()">🔄 फिर से शुरू करें</button>'
-    +'</div>';
-}
+  function shuffle(arr){
+    var a=arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var tmp=a[i];a[i]=a[j];a[j]=tmp;
+    }
+    return a;
+  }
 
-function restartDeck(){
-  stats={t:0,c:0,w:0,s:0};updateStats();
-  deck=shuffle(getPool());deckIdx=0;saveDeck();
-  showCard();renderQ();
-}
+  function sKey(s){return 'ncert_'+VERSION+'_'+s;}
 
-loadDeck();showCard();renderQ();
+  function getPool(){
+    return sub==='mixed'?ALL_Q:ALL_Q.filter(function(q){return q.s===sub;});
+  }
+
+  function saveDeck(){
+    try{
+      var order=deck.map(function(q){return ALL_Q.indexOf(q);});
+      localStorage.setItem(sKey(sub),JSON.stringify({order:order,idx:deckIdx,total:deck.length}));
+    }catch(e){}
+  }
+
+  function loadDeck(){
+    var pool=getPool();
+    if(pool.length===0){
+      deck=[];deckIdx=0;return;
+    }
+    try{
+      var saved=localStorage.getItem(sKey(sub));
+      if(saved){
+        var data=JSON.parse(saved);
+        // Only restore if same number of questions
+        if(data.total===pool.length && data.order && data.order.length===pool.length){
+          var restored=data.order.map(function(i){return ALL_Q[i];}).filter(Boolean);
+          if(restored.length===pool.length){
+            deck=restored;
+            deckIdx=Math.min(data.idx||0, deck.length);
+            if(deckIdx>=deck.length){deck=shuffle(pool);deckIdx=0;saveDeck();}
+            return;
+          }
+        }
+      }
+    }catch(e){}
+    deck=shuffle(pool);deckIdx=0;saveDeck();
+  }
+
+  function setSub(btn,s){
+    document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    sub=s;stats={t:0,c:0,w:0,s:0};updateStats();
+    loadDeck();renderQ();
+  }
+
+  function renderQ(){
+    var qa=document.getElementById('quizarea');
+    if(deck.length===0){
+      qa.innerHTML='<div class="loading">❌ इस विषय में MCQ नहीं मिले!</div>';return;
+    }
+    if(deckIdx>=deck.length){showComplete();return;}
+    answered=false;cur=deck[deckIdx];
+
+    var pct=Math.round((deckIdx/deck.length)*100);
+    document.getElementById('progfill').style.width=pct+'%';
+    document.getElementById('qnum').textContent='प्रश्न '+(deckIdx+1)+'/'+deck.length;
+    document.getElementById('qpct').textContent=pct+'% पूरा';
+
+    var html='<div class="card">'
+      +'<div class="meta"><span class="badge">'+cur.c+' | '+SUBNAMES[sub]+'</span><span class="etag">'+cur.t+'</span></div>'
+      +'<div class="qhi">'+cur.qh+'</div>'
+      +'<div class="qen">'+cur.qe+'</div>'
+      +'<div class="opts" id="opts"></div>'
+      +'<div class="exp" id="exp"><div class="etitle">💡 व्याख्या | Explanation</div>'
+      +'<div class="ehi">'+cur.eh+'</div><div class="een">'+cur.ee+'</div></div>'
+      +'<button class="next" id="next" onclick="nextQuestion()">➡️ अगला प्रश्न | Next</button>'
+      +'</div>';
+    qa.innerHTML=html;
+
+    cur.o.forEach(function(opt){
+      var b=document.createElement('button');
+      b.className='opt';
+      b.innerHTML='<div class="ol">'+opt.l+'</div><div><div class="ohi">'+opt.h+'</div><div class="oen">'+opt.e+'</div></div>';
+      b.onclick=function(){pick(opt.l,b);};
+      document.getElementById('opts').appendChild(b);
+    });
+  }
+
+  window.nextQuestion=function(){
+    deckIdx++;saveDeck();renderQ();
+  };
+
+  function pick(letter,btn){
+    if(answered)return;
+    answered=true;stats.t++;
+    document.querySelectorAll('.opt').forEach(function(b){b.disabled=true;});
+    if(letter===cur.a){
+      btn.classList.add('correct');stats.c++;stats.s++;
+      if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
+        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+    }else{
+      btn.classList.add('wrong');stats.w++;stats.s=0;
+      document.querySelectorAll('.opt').forEach(function(b){
+        if(b.querySelector('.ol').textContent===cur.a)b.classList.add('show-ans');
+      });
+      if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
+        Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+    }
+    updateStats();
+    document.getElementById('exp').style.display='block';
+    document.getElementById('next').classList.add('show');
+  }
+
+  function updateStats(){
+    document.getElementById('t').textContent=stats.t;
+    document.getElementById('c').textContent=stats.c;
+    document.getElementById('w').textContent=stats.w;
+    document.getElementById('s').textContent=stats.s+'🔥';
+  }
+
+  function showComplete(){
+    var pct=stats.t>0?Math.round((stats.c/stats.t)*100):0;
+    var emoji=pct>=80?'🏆':pct>=60?'👍':'📚';
+    document.getElementById('progfill').style.width='100%';
+    document.getElementById('qnum').textContent='सभी प्रश्न पूरे! ✅';
+    document.getElementById('qpct').textContent='100% पूरा';
+    try{localStorage.removeItem(sKey(sub));}catch(e){}
+    document.getElementById('quizarea').innerHTML=
+      '<div class="complete-card">'
+      +'<div style="font-size:48px">'+emoji+'</div>'
+      +'<h2>शाबाश! 🎉</h2>'
+      +'<p>सभी <b>'+deck.length+'</b> प्रश्न पूरे!<br>'
+      +'सही: <b>'+stats.c+'/'+stats.t+'</b> ('+pct+'%)<br><br>'
+      +'🔄 अब नए क्रम में शुरू होगा!</p>'
+      +'<button class="restart-btn" onclick="restartNow()">🔄 फिर से शुरू करें</button>'
+      +'</div>';
+  }
+
+  window.restartNow=function(){
+    stats={t:0,c:0,w:0,s:0};updateStats();
+    deck=shuffle(getPool());deckIdx=0;saveDeck();renderQ();
+  };
+
+  // Start
+  window.setSub=setSub;
+  loadDeck();renderQ();
+}
 </script>
 </body>
 </html>
