@@ -5,60 +5,59 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NCERT Quiz</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="q_history.js"></script>
+<script src="q_geography.js"></script>
+<script src="q_polity.js"></script>
+<script src="q_economics.js"></script>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Baloo 2',sans-serif; background:#FFF8F0; min-height:100vh; }
-.header { background:linear-gradient(135deg,#FF6B00,#FFB300); padding:14px; text-align:center; }
-.header h1 { color:white; font-size:20px; font-weight:800; }
-.header p { color:rgba(255,255,255,0.9); font-size:11px; }
-.tabs { display:flex; gap:6px; padding:10px; overflow-x:auto; background:white; border-bottom:2px solid #F0E6D3; scrollbar-width:none; }
-.tabs::-webkit-scrollbar{display:none;}
-.tab { flex-shrink:0; padding:6px 14px; border:2px solid transparent; border-radius:20px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; background:#F5F5F5; color:#666; transition:all 0.2s; }
-.tab.active { background:#FF6B00; color:white; border-color:#E55A00; }
-.classes { display:flex; gap:6px; padding:8px 10px; overflow-x:auto; background:white; border-bottom:1px solid #F0E6D3; scrollbar-width:none; }
-.classes::-webkit-scrollbar{display:none;}
-.cls { flex-shrink:0; padding:4px 12px; border:2px solid #DDD; border-radius:12px; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; background:white; color:#888; }
-.cls.active { border-color:#0D47A1; background:#E3F2FD; color:#0D47A1; }
-.stats { display:flex; justify-content:space-around; padding:8px; background:white; border-bottom:1px solid #F0E6D3; }
-.stat { text-align:center; }
-.sv { font-size:18px; font-weight:800; color:#FF6B00; }
-.sv.g{color:#2E7D32;} .sv.r{color:#C62828;}
-.sl { font-size:10px; color:#888; }
-.premium { background:linear-gradient(135deg,#1A1A2E,#0D47A1); color:white; padding:8px 14px; display:flex; align-items:center; justify-content:space-between; font-size:11px; }
-.pbtn { background:#FFB300; color:#333; border:none; padding:4px 12px; border-radius:20px; font-family:inherit; font-size:11px; font-weight:700; cursor:pointer; }
-.main { padding:12px; }
-.card { background:white; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(255,107,0,0.15); border-left:5px solid #FF6B00; animation:up 0.3s ease; }
-@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.meta { display:flex; justify-content:space-between; margin-bottom:10px; }
-.badge { background:#FFF3CD; color:#8B6914; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
-.etag { background:#E8EAF6; color:#3949AB; font-size:10px; font-weight:600; padding:3px 8px; border-radius:10px; }
-.qhi { font-size:15px; font-weight:700; line-height:1.6; margin-bottom:6px; }
-.qen { font-size:12px; color:#666; font-style:italic; margin-bottom:12px; padding-bottom:10px; border-bottom:1px dashed #EEE; }
-.opts { display:flex; flex-direction:column; gap:8px; }
-.opt { display:flex; align-items:center; gap:10px; padding:10px 14px; border:2px solid #E8E8E8; border-radius:12px; background:#FAFAFA; cursor:pointer; font-family:inherit; width:100%; transition:all 0.2s; text-align:left; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#FFF8F0;min-height:100vh;}
+.header{background:linear-gradient(135deg,#FF6B00,#FFB300);padding:14px;text-align:center;}
+.header h1{color:white;font-size:20px;font-weight:800;}
+.header p{color:rgba(255,255,255,0.9);font-size:11px;}
+.tabs{display:flex;gap:6px;padding:10px;overflow-x:auto;background:white;border-bottom:2px solid #F0E6D3;}
+.tab{flex-shrink:0;padding:6px 14px;border:2px solid transparent;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;background:#F5F5F5;color:#666;}
+.tab.active{background:#FF6B00;color:white;}
+.stats{display:flex;justify-content:space-around;padding:10px;background:white;border-bottom:1px solid #eee;}
+.stat{text-align:center;}
+.sv{font-size:20px;font-weight:800;color:#FF6B00;}
+.sv.g{color:#2E7D32;}
+.sv.r{color:#C62828;}
+.sl{font-size:10px;color:#888;}
+.premium{background:linear-gradient(135deg,#1A1A2E,#0D47A1);color:white;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;font-size:11px;}
+.pbtn{background:#FFB300;color:#333;border:none;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+.main{padding:12px;}
+.progress-bar{background:#F0E6D3;border-radius:10px;height:8px;margin-bottom:10px;overflow:hidden;}
+.progress-fill{background:linear-gradient(90deg,#FF6B00,#FFB300);height:100%;border-radius:10px;transition:width 0.4s;}
+.qinfo{display:flex;justify-content:space-between;font-size:11px;color:#888;margin-bottom:8px;}
+.card{background:white;border-radius:16px;padding:16px;box-shadow:0 4px 20px rgba(255,107,0,0.15);border-left:5px solid #FF6B00;}
+.meta{display:flex;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:4px;}
+.badge{background:#FFF3CD;color:#8B6914;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.etag{background:#E8EAF6;color:#3949AB;font-size:10px;padding:3px 8px;border-radius:10px;}
+.qhi{font-size:15px;font-weight:700;line-height:1.6;margin-bottom:6px;}
+.qen{font-size:12px;color:#666;font-style:italic;margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed #EEE;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid #E8E8E8;border-radius:12px;background:#FAFAFA;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:all 0.2s;}
 .opt:hover:not(:disabled){border-color:#FF6B00;background:#FFF5EC;}
-.ol { width:28px; height:28px; border-radius:50%; background:#F0F0F0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; flex-shrink:0; color:#666; }
-.ohi { font-size:13px; font-weight:600; }
-.oen { font-size:11px; color:#888; font-style:italic; }
+.ol{width:28px;height:28px;border-radius:50%;background:#F0F0F0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#666;}
+.ohi{font-size:13px;font-weight:600;}
+.oen{font-size:11px;color:#888;font-style:italic;}
 .opt.correct{border-color:#2E7D32;background:#E8F5E9;}
 .opt.correct .ol{background:#2E7D32;color:white;}
 .opt.wrong{border-color:#C62828;background:#FFEBEE;}
 .opt.wrong .ol{background:#C62828;color:white;}
-.opt.show{border-color:#2E7D32;background:#E8F5E9;opacity:0.8;}
-.exp { margin-top:12px; padding:12px; background:#FFF8E1; border-radius:10px; border-left:4px solid #FFB300; display:none; }
-.etitle { font-size:12px; font-weight:700; color:#7B5800; margin-bottom:6px; }
-.ehi { font-size:13px; color:#5D4037; line-height:1.6; }
-.een { font-size:11px; color:#795548; font-style:italic; margin-top:4px; }
-.next { width:100%; padding:14px; background:linear-gradient(135deg,#FF6B00,#E55A00); color:white; border:none; border-radius:14px; font-family:inherit; font-size:16px; font-weight:800; cursor:pointer; margin-top:10px; display:none; box-shadow:0 4px 15px rgba(255,107,0,0.35); }
+.opt.show-ans{border-color:#2E7D32;background:#E8F5E9;opacity:0.8;}
+.exp{margin-top:12px;padding:12px;background:#FFF8E1;border-radius:10px;border-left:4px solid #FFB300;display:none;}
+.etitle{font-size:12px;font-weight:700;color:#7B5800;margin-bottom:6px;}
+.ehi{font-size:13px;color:#5D4037;line-height:1.6;}
+.een{font-size:11px;color:#795548;font-style:italic;margin-top:4px;}
+.next{width:100%;padding:14px;background:linear-gradient(135deg,#FF6B00,#E55A00);color:white;border:none;border-radius:14px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;margin-top:10px;display:none;}
 .next.show{display:block;}
-.loader { text-align:center; padding:40px 20px; background:white; border-radius:16px; box-shadow:0 4px 20px rgba(255,107,0,0.15); }
-.spin { display:inline-block; width:40px; height:40px; border:4px solid #FFE0CC; border-top-color:#FF6B00; border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:16px; }
-@keyframes spin{to{transform:rotate(360deg)}}
-.lt { color:#FF6B00; font-size:15px; font-weight:700; }
-.err { background:#FFF3E0; border-radius:16px; padding:20px; text-align:center; border:2px solid #FFB300; display:none; }
-.err.show{display:block;}
-.rbtn { margin-top:12px; padding:10px 24px; background:#FF6B00; color:white; border:none; border-radius:10px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+.complete-card{background:white;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 20px rgba(255,107,0,0.15);}
+.complete-card h2{font-size:22px;margin-bottom:8px;}
+.complete-card p{color:#666;font-size:14px;margin-bottom:16px;line-height:1.8;}
+.restart-btn{background:linear-gradient(135deg,#FF6B00,#E55A00);color:white;border:none;border-radius:14px;padding:14px 28px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
+.loading{text-align:center;padding:40px;color:#FF6B00;font-size:16px;font-weight:700;}
 </style>
 </head>
 <body>
@@ -67,21 +66,11 @@ body { font-family:'Baloo 2',sans-serif; background:#FFF8F0; min-height:100vh; }
   <p>कक्षा 6-12 | इतिहास • भूगोल • अर्थशास्त्र • राजनीति</p>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="setSub(this,'इतिहास')">⚔️ इतिहास</button>
-  <button class="tab" onclick="setSub(this,'भूगोल')">🌍 भूगोल</button>
-  <button class="tab" onclick="setSub(this,'अर्थशास्त्र')">📈 अर्थशास्त्र</button>
-  <button class="tab" onclick="setSub(this,'राजनीतिशास्त्र')">🏛️ राजनीति</button>
-  <button class="tab" onclick="setSub(this,'मिश्रित')">🎲 मिश्रित</button>
-</div>
-<div class="classes">
-  <button class="cls active" onclick="setCls(this,'all')">सभी</button>
-  <button class="cls" onclick="setCls(this,'6')">6th</button>
-  <button class="cls" onclick="setCls(this,'7')">7th</button>
-  <button class="cls" onclick="setCls(this,'8')">8th</button>
-  <button class="cls" onclick="setCls(this,'9')">9th</button>
-  <button class="cls" onclick="setCls(this,'10')">10th</button>
-  <button class="cls" onclick="setCls(this,'11')">11th</button>
-  <button class="cls" onclick="setCls(this,'12')">12th</button>
+  <button class="tab active" onclick="setSub(this,'history')">⚔️ इतिहास</button>
+  <button class="tab" onclick="setSub(this,'geography')">🌍 भूगोल</button>
+  <button class="tab" onclick="setSub(this,'economics')">📈 अर्थशास्त्र</button>
+  <button class="tab" onclick="setSub(this,'polity')">🏛️ राजनीति</button>
+  <button class="tab" onclick="setSub(this,'mixed')">🎲 मिश्रित</button>
 </div>
 <div class="stats">
   <div class="stat"><div class="sv" id="t">0</div><div class="sl">कुल</div></div>
@@ -90,102 +79,206 @@ body { font-family:'Baloo 2',sans-serif; background:#FFF8F0; min-height:100vh; }
   <div class="stat"><div class="sv" id="s">0🔥</div><div class="sl">स्ट्रीक</div></div>
 </div>
 <div class="premium">
-  <span>✨ Premium: Unlimited MCQs + PDF Notes</span>
-  <button class="pbtn" onclick="alert('₹99/माह\nContact: @your_username')">₹99/माह</button>
+  <span>✨ UPSC | SSC | Railway | CTET</span>
+  <button class="pbtn" id="qcountbtn">लोड हो रहा...</button>
 </div>
 <div class="main">
-  <div class="loader" id="loader"><div class="spin"></div><div class="lt">प्रश्न तैयार हो रहा है...</div></div>
-  <div class="err" id="err"><div style="font-size:32px">⚠️</div><div style="font-weight:700;margin:8px 0">कुछ गड़बड़ हुई</div><div id="emsg" style="font-size:13px;color:#666"></div><button class="rbtn" onclick="load()">🔄 दोबारा कोशिश</button></div>
-  <div class="card" id="card" style="display:none">
-    <div class="meta"><span class="badge" id="qb"></span><span class="etag" id="qt"></span></div>
-    <div class="qhi" id="qh"></div>
-    <div class="qen" id="qe"></div>
-    <div class="opts" id="opts"></div>
-    <div class="exp" id="exp"><div class="etitle">💡 व्याख्या | Explanation</div><div class="ehi" id="eh"></div><div class="een" id="ee"></div></div>
-    <button class="next" id="next" onclick="load()">अगला प्रश्न → Next Question</button>
+  <div class="progress-bar"><div class="progress-fill" id="progfill" style="width:0%"></div></div>
+  <div class="qinfo">
+    <span id="qnum">लोड हो रहा...</span>
+    <span id="qpct">0% पूरा</span>
+  </div>
+  <div id="quizarea">
+    <div class="loading">⏳ प्रश्न लोड हो रहे हैं...</div>
   </div>
 </div>
+
 <script>
-const KEY = "AIzaSyAKji440cnc0OVu9A0SbWSKkFFbPR54viI";
-let sub='इतिहास', cls='all', done=false, cur=null;
-let stats={t:0,c:0,w:0,s:0};
+if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
 
-if(window.Telegram?.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
-window.onload=()=>load();
+// VERSION - change this to force reset old localStorage
+var VERSION = 'v3';
 
-function setSub(b,s){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');sub=s;if(!done)load();}
-function setCls(b,c){document.querySelectorAll('.cls').forEach(x=>x.classList.remove('active'));b.classList.add('active');cls=c;if(!done)load();}
+// Wait for all scripts to load
+window.addEventListener('load', function(){
+  init();
+});
 
-async function load(){
-  done=false;
-  document.getElementById('next').classList.remove('show');
-  document.getElementById('card').style.display='none';
-  document.getElementById('err').classList.remove('show');
-  document.getElementById('loader').style.display='block';
-  try{const q=await getQ();show(q);}
-  catch(e){
-    document.getElementById('loader').style.display='none';
-    document.getElementById('err').classList.add('show');
-    document.getElementById('emsg').textContent=e.message;
+function init(){
+  var ALL_Q = [].concat(
+    (typeof Q_HISTORY!=='undefined'?Q_HISTORY:[]),
+    (typeof Q_GEOGRAPHY!=='undefined'?Q_GEOGRAPHY:[]),
+    (typeof Q_POLITY!=='undefined'?Q_POLITY:[]),
+    (typeof Q_ECONOMICS!=='undefined'?Q_ECONOMICS:[])
+  );
+
+  // Clear old broken localStorage if version changed
+  try {
+    var savedVersion = localStorage.getItem('quiz_version');
+    if(savedVersion !== VERSION) {
+      // Clear all old keys
+      var keys = [];
+      for(var i=0;i<localStorage.length;i++) keys.push(localStorage.key(i));
+      keys.forEach(function(k){ if(k.indexOf('ncert_')===0) localStorage.removeItem(k); });
+      localStorage.setItem('quiz_version', VERSION);
+    }
+  } catch(e){}
+
+  if(ALL_Q.length === 0){
+    document.getElementById('quizarea').innerHTML = '<div class="loading">❌ MCQ files load नहीं हुईं!<br>q_history.js, q_geography.js,<br>q_polity.js, q_economics.js<br>GitHub पर add करो!</div>';
+    document.getElementById('qcountbtn').textContent = '0 MCQs ❌';
+    return;
   }
-}
 
-async function getQ(){
-  const ct=cls==='all'?'कक्षा 6 से 12':`कक्षा ${cls}`;
-  const seed=Math.floor(Math.random()*9999);
-  const prompt=`NCERT ${sub} ${ct} से एक MCQ बनाओ जो UPSC/SSC/Railway में पूछा गया हो।
-केवल यह JSON दो, कुछ और नहीं:
-{"class":"कक्षा 9","exam_tag":"SSC 2022","q_hi":"हिंदी प्रश्न","q_en":"English question","options":[{"letter":"A","hi":"विकल्प A","en":"Option A"},{"letter":"B","hi":"विकल्प B","en":"Option B"},{"letter":"C","hi":"विकल्प C","en":"Option C"},{"letter":"D","hi":"विकल्प D","en":"Option D"}],"correct":"B","exp_hi":"व्याख्या","exp_en":"Explanation"}
-Seed:${seed}`;
+  document.getElementById('qcountbtn').textContent = ALL_Q.length + '+ MCQs ✅';
 
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${KEY}`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.9,maxOutputTokens:800}})
-  });
-  if(!r.ok)throw new Error('API Error: '+r.status);
-  const d=await r.json();
-  const txt=d.candidates[0].content.parts[0].text;
-  const m=txt.match(/\{[\s\S]*\}/);
-  if(!m)throw new Error('Parse error');
-  return JSON.parse(m[0]);
-}
+  var SUBNAMES={history:"इतिहास",geography:"भूगोल",economics:"अर्थशास्त्र",polity:"राजनीति",mixed:"मिश्रित"};
+  var sub="history", stats={t:0,c:0,w:0,s:0}, deck=[], deckIdx=0, answered=false, cur=null;
 
-function show(q){
-  cur=q;
-  document.getElementById('loader').style.display='none';
-  document.getElementById('card').style.display='block';
-  document.getElementById('exp').style.display='none';
-  document.getElementById('qb').textContent=`${q.class} | ${sub}`;
-  document.getElementById('qt').textContent=q.exam_tag||'UPSC/SSC';
-  document.getElementById('qh').textContent=q.q_hi;
-  document.getElementById('qe').textContent=q.q_en;
-  const o=document.getElementById('opts');
-  o.innerHTML='';
-  q.options.forEach(opt=>{
-    const b=document.createElement('button');
-    b.className='opt';
-    b.innerHTML=`<div class="ol">${opt.letter}</div><div><div class="ohi">${opt.hi}</div><div class="oen">${opt.en}</div></div>`;
-    b.onclick=()=>ans(opt.letter,q.correct,b);
-    o.appendChild(b);
-  });
-}
+  function shuffle(arr){
+    var a=arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var tmp=a[i];a[i]=a[j];a[j]=tmp;
+    }
+    return a;
+  }
 
-function ans(sel,cor,btn){
-  if(done)return;
-  done=true;
-  stats.t++;
-  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
-  if(sel===cor){btn.classList.add('correct');stats.c++;stats.s++;if(Telegram?.WebApp?.HapticFeedback)Telegram.WebApp.HapticFeedback.notificationOccurred('success');}
-  else{btn.classList.add('wrong');stats.s=0;document.querySelectorAll('.opt').forEach(b=>{if(b.querySelector('.ol').textContent===cor)b.classList.add('show');});if(Telegram?.WebApp?.HapticFeedback)Telegram.WebApp.HapticFeedback.notificationOccurred('error');}
-  document.getElementById('t').textContent=stats.t;
-  document.getElementById('c').textContent=stats.c;
-  document.getElementById('w').textContent=stats.w=(stats.t-stats.c);
-  document.getElementById('s').textContent=stats.s+'🔥';
-  document.getElementById('eh').textContent=cur.exp_hi;
-  document.getElementById('ee').textContent=cur.exp_en;
-  document.getElementById('exp').style.display='block';
-  document.getElementById('next').classList.add('show');
+  function sKey(s){return 'ncert_'+VERSION+'_'+s;}
+
+  function getPool(){
+    return sub==='mixed'?ALL_Q:ALL_Q.filter(function(q){return q.s===sub;});
+  }
+
+  function saveDeck(){
+    try{
+      var order=deck.map(function(q){return ALL_Q.indexOf(q);});
+      localStorage.setItem(sKey(sub),JSON.stringify({order:order,idx:deckIdx,total:deck.length}));
+    }catch(e){}
+  }
+
+  function loadDeck(){
+    var pool=getPool();
+    if(pool.length===0){
+      deck=[];deckIdx=0;return;
+    }
+    try{
+      var saved=localStorage.getItem(sKey(sub));
+      if(saved){
+        var data=JSON.parse(saved);
+        // Only restore if same number of questions
+        if(data.total===pool.length && data.order && data.order.length===pool.length){
+          var restored=data.order.map(function(i){return ALL_Q[i];}).filter(Boolean);
+          if(restored.length===pool.length){
+            deck=restored;
+            deckIdx=Math.min(data.idx||0, deck.length);
+            if(deckIdx>=deck.length){deck=shuffle(pool);deckIdx=0;saveDeck();}
+            return;
+          }
+        }
+      }
+    }catch(e){}
+    deck=shuffle(pool);deckIdx=0;saveDeck();
+  }
+
+  function setSub(btn,s){
+    document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    sub=s;stats={t:0,c:0,w:0,s:0};updateStats();
+    loadDeck();renderQ();
+  }
+
+  function renderQ(){
+    var qa=document.getElementById('quizarea');
+    if(deck.length===0){
+      qa.innerHTML='<div class="loading">❌ इस विषय में MCQ नहीं मिले!</div>';return;
+    }
+    if(deckIdx>=deck.length){showComplete();return;}
+    answered=false;cur=deck[deckIdx];
+
+    var pct=Math.round((deckIdx/deck.length)*100);
+    document.getElementById('progfill').style.width=pct+'%';
+    document.getElementById('qnum').textContent='प्रश्न '+(deckIdx+1)+'/'+deck.length;
+    document.getElementById('qpct').textContent=pct+'% पूरा';
+
+    var html='<div class="card">'
+      +'<div class="meta"><span class="badge">'+cur.c+' | '+SUBNAMES[sub]+'</span><span class="etag">'+cur.t+'</span></div>'
+      +'<div class="qhi">'+cur.qh+'</div>'
+      +'<div class="qen">'+cur.qe+'</div>'
+      +'<div class="opts" id="opts"></div>'
+      +'<div class="exp" id="exp"><div class="etitle">💡 व्याख्या | Explanation</div>'
+      +'<div class="ehi">'+cur.eh+'</div><div class="een">'+cur.ee+'</div></div>'
+      +'<button class="next" id="next" onclick="nextQuestion()">➡️ अगला प्रश्न | Next</button>'
+      +'</div>';
+    qa.innerHTML=html;
+
+    cur.o.forEach(function(opt){
+      var b=document.createElement('button');
+      b.className='opt';
+      b.innerHTML='<div class="ol">'+opt.l+'</div><div><div class="ohi">'+opt.h+'</div><div class="oen">'+opt.e+'</div></div>';
+      b.onclick=function(){pick(opt.l,b);};
+      document.getElementById('opts').appendChild(b);
+    });
+  }
+
+  window.nextQuestion=function(){
+    deckIdx++;saveDeck();renderQ();
+  };
+
+  function pick(letter,btn){
+    if(answered)return;
+    answered=true;stats.t++;
+    document.querySelectorAll('.opt').forEach(function(b){b.disabled=true;});
+    if(letter===cur.a){
+      btn.classList.add('correct');stats.c++;stats.s++;
+      if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
+        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+    }else{
+      btn.classList.add('wrong');stats.w++;stats.s=0;
+      document.querySelectorAll('.opt').forEach(function(b){
+        if(b.querySelector('.ol').textContent===cur.a)b.classList.add('show-ans');
+      });
+      if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)
+        Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+    }
+    updateStats();
+    document.getElementById('exp').style.display='block';
+    document.getElementById('next').classList.add('show');
+  }
+
+  function updateStats(){
+    document.getElementById('t').textContent=stats.t;
+    document.getElementById('c').textContent=stats.c;
+    document.getElementById('w').textContent=stats.w;
+    document.getElementById('s').textContent=stats.s+'🔥';
+  }
+
+  function showComplete(){
+    var pct=stats.t>0?Math.round((stats.c/stats.t)*100):0;
+    var emoji=pct>=80?'🏆':pct>=60?'👍':'📚';
+    document.getElementById('progfill').style.width='100%';
+    document.getElementById('qnum').textContent='सभी प्रश्न पूरे! ✅';
+    document.getElementById('qpct').textContent='100% पूरा';
+    try{localStorage.removeItem(sKey(sub));}catch(e){}
+    document.getElementById('quizarea').innerHTML=
+      '<div class="complete-card">'
+      +'<div style="font-size:48px">'+emoji+'</div>'
+      +'<h2>शाबाश! 🎉</h2>'
+      +'<p>सभी <b>'+deck.length+'</b> प्रश्न पूरे!<br>'
+      +'सही: <b>'+stats.c+'/'+stats.t+'</b> ('+pct+'%)<br><br>'
+      +'🔄 अब नए क्रम में शुरू होगा!</p>'
+      +'<button class="restart-btn" onclick="restartNow()">🔄 फिर से शुरू करें</button>'
+      +'</div>';
+  }
+
+  window.restartNow=function(){
+    stats={t:0,c:0,w:0,s:0};updateStats();
+    deck=shuffle(getPool());deckIdx=0;saveDeck();renderQ();
+  };
+
+  // Start
+  window.setSub=setSub;
+  loadDeck();renderQ();
 }
 </script>
 </body>
